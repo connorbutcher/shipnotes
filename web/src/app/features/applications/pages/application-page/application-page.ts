@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
+import { injectWideLayout } from '../../../../core/routing/wide-layout';
 import { ApplicationsStore } from '../../../../core/state/applications-store';
 import { ApiKeyReveal } from '../../../../shared/ui/api-key-reveal/api-key-reveal';
 import { EmptyState } from '../../../../shared/ui/empty-state/empty-state';
@@ -29,6 +30,9 @@ export class ApplicationPage {
   protected readonly store = inject(ApplicationsStore);
 
   readonly applicationId = input.required<string>();
+
+  /** Editor pages with a live preview use the full width rather than the reading width. */
+  protected readonly wide = injectWideLayout();
 
   protected readonly application = computed(() =>
     this.store.applications().find((a) => a.id === this.applicationId()),

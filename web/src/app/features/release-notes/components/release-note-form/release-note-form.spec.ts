@@ -6,7 +6,9 @@ describe('ReleaseNoteForm', () => {
   function setup() {
     const fixture = TestBed.createComponent(ReleaseNoteForm);
     const saved: SaveReleaseNoteRequest[] = [];
+    const drafts: SaveReleaseNoteRequest[] = [];
     fixture.componentInstance.saved.subscribe((value) => saved.push(value));
+    fixture.componentInstance.draftChanged.subscribe((value) => drafts.push(value));
     fixture.detectChanges();
     const element = fixture.nativeElement as HTMLElement;
     const type = (name: string, value: string) => {
@@ -19,7 +21,7 @@ describe('ReleaseNoteForm', () => {
       element.querySelector('form')!.dispatchEvent(new Event('submit'));
       fixture.detectChanges();
     };
-    return { fixture, element, saved, type, submit };
+    return { fixture, element, saved, drafts, type, submit };
   }
 
   it('rejects versions that are not semver', () => {
@@ -83,5 +85,18 @@ describe('ReleaseNoteForm', () => {
     fixture.detectChanges();
 
     expect(element.querySelectorAll('app-release-note-section').length).toBe(1);
+  });
+
+  it('emits the draft as the user types, for the live preview', () => {
+    const { drafts, type } = setup();
+    type('version', '1.3.0');
+    type('title', ' Dark mode ');
+    expect(drafts.at(-1)).toEqual({
+      version: '1.3.0',
+      title: 'Dark mode',
+      summaryHtml: '',
+      sections: [],
+      isPublished: false,
+    });
   });
 });

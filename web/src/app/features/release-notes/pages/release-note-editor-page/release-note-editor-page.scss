@@ -1,3 +1,5 @@
+@use 'abstracts' as *;
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -6,4 +8,23 @@
 
 h2 {
   font-size: var(--font-size-lg);
+}
+
+// Editor and live preview side by side on wide screens; preview stacks below on narrow ones.
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+
+  @include breakpoint-up('xl') {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+
+aside {
+  @include breakpoint-up('xl') {
+    position: sticky;
+    top: 0;
+  }
 }

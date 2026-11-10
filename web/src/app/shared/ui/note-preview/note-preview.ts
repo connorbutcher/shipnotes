@@ -1,8 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Tag } from 'primeng/tag';
-import { PublicReleaseNote } from '../../../../core/models/public-release-note.model';
-import { CategoryTag } from '../../../../shared/ui/category-tag/category-tag';
+import { PublicReleaseNote } from '../../../core/models/public-release-note.model';
+import { CategoryTag } from '../category-tag/category-tag';
 
 /**
  * One release note rendered the way a consuming app would show it: the summary, then a

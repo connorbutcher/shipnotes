@@ -4,3 +4,7 @@
   gap: var(--space-6);
   max-width: var(--content-max-width);
 }
+
+.page.wide {
+  max-width: var(--wide-max-width);
+}

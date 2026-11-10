@@ -73,6 +73,7 @@ $shadows: (
 $layout: (
   'side-panel-width': 16.25rem,
   'content-max-width': 60rem,
+  'wide-max-width': 96rem,
   'form-max-width': 32rem,
   'prose-max-width': 28rem,
   'narrow-max-width': 40rem,
@@ -80,6 +81,12 @@ $layout: (
   'editor-compact-min-height': 8rem,
   'field-min-width': 12rem,
   'response-max-height': 32rem,
+);
+
+// Viewport widths for media queries (Sass only: CSS variables cannot be used in @media).
+// Use through the breakpoint-up mixin.
+$breakpoints: (
+  'xl': 80rem,
 );
 
 // Semantic colours, mapped onto the PrimeNG theme's --p-* variables so the app has

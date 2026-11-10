@@ -1,0 +1,18 @@
+@use 'abstracts' as *;
+
+:host {
+  @include stack(3);
+}
+
+header {
+  @include row-between;
+  gap: var(--space-3);
+}
+
+h3 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}

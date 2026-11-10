@@ -1,5 +1,5 @@
 @if (application(); as application) {
-  <div class="page">
+  <div class="page" [class.wide]="wide()">
     <app-application-header [application]="application" />
     @if (issuedKey(); as key) {
       <app-api-key-reveal [apiKey]="key" (dismissed)="store.clearIssuedKey()" />

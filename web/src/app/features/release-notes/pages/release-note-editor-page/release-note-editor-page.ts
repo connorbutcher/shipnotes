@@ -12,7 +12,9 @@ import { NotificationService } from '../../../../core/notifications/notification
 import { ConfirmService } from '../../../../shared/services/confirm.service';
 import { LoadingState } from '../../../../shared/ui/loading-state/loading-state';
 import { ReleaseNoteForm } from '../../components/release-note-form/release-note-form';
+import { ReleaseNotePreview } from '../../components/release-note-preview/release-note-preview';
 import { ImageUploader } from '../../components/rich-text-editor/editor-image-upload';
+import { toPreviewNote } from '../../preview/preview-note';
 
 /** Creates a release note, or edits one when a release note id is in the route. */
 @Component({
@@ -27,6 +29,7 @@ import { ImageUploader } from '../../components/rich-text-editor/editor-image-up
     Message,
     LoadingState,
     ReleaseNoteForm,
+    ReleaseNotePreview,
   ],
   templateUrl: './release-note-editor-page.html',
   styleUrl: './release-note-editor-page.scss',
@@ -45,6 +48,15 @@ export class ReleaseNoteEditorPage {
   protected readonly isNew = computed(() => !this.releaseNoteId());
   protected readonly saving = signal(false);
 
+  /** The unsaved form values, updated as the user types. */
+  protected readonly draft = signal<SaveReleaseNoteRequest>({
+    version: '',
+    title: '',
+    summaryHtml: '',
+    sections: [],
+    isPublished: false,
+  });
+
   /** Uploads editor images to this application's media and returns the URL to embed. */
   protected readonly uploadImage = computed<ImageUploader>(() => {
     const applicationId = this.applicationId();
@@ -59,6 +71,11 @@ export class ReleaseNoteEditorPage {
     params: () => ({ applicationId: this.applicationId(), id: this.releaseNoteId() }),
     stream: ({ params }) => (params.id ? this.api.get(params.applicationId, params.id) : of(null)),
   });
+
+  /** The draft as consuming apps will receive it, for the live preview. */
+  protected readonly preview = computed(() =>
+    toPreviewNote(this.draft(), this.note.value()?.publishedAt ?? null),
+  );
 
   protected save(request: SaveReleaseNoteRequest): void {
     const id = this.releaseNoteId();
