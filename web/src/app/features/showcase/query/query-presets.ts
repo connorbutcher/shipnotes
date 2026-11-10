@@ -1,3 +1,4 @@
+import { ReleaseNoteCategory } from '../../../core/models/release-note-category';
 import { QueryRequest } from './query-request';
 
 /** A ready-made question a consuming app might ask, applied to the console in one click. */
@@ -48,6 +49,33 @@ export const QUERY_PRESETS: readonly QueryPreset[] = [
     request: { endpoint: 'list', limit: 3, includePreReleases: false, after: '', upTo: '' },
   },
   {
+    id: 'security-and-breaking',
+    label: 'Only breaking and security changes',
+    icon: 'pi pi-shield',
+    expectedStatus: 200,
+    request: {
+      endpoint: 'list',
+      categories: ['breaking', 'security'],
+      after: '',
+      upTo: '',
+      limit: null,
+    },
+  },
+  {
+    id: 'security-upgrade',
+    label: 'Security fixes from 1.0.0 to 2.0.0',
+    icon: 'pi pi-lock-open',
+    expectedStatus: 200,
+    request: { endpoint: 'between', from: '1.0.0', to: '2.0.0', categories: ['security'] },
+  },
+  {
+    id: 'latest-breaking',
+    label: 'Latest breaking change',
+    icon: 'pi pi-exclamation-triangle',
+    expectedStatus: 200,
+    request: { endpoint: 'latest', categories: ['breaking'] },
+  },
+  {
     id: 'app-details',
     label: 'Application details',
     icon: 'pi pi-box',
@@ -69,6 +97,13 @@ export const QUERY_PRESETS: readonly QueryPreset[] = [
     request: { endpoint: 'latest', sendApiKey: false },
   },
   {
+    id: 'bad-category',
+    label: 'Unknown category (400)',
+    icon: 'pi pi-question-circle',
+    expectedStatus: 400,
+    request: { endpoint: 'list', categories: ['bugs' as ReleaseNoteCategory] },
+  },
+  {
     id: 'bad-range',
     label: 'Backwards range (400)',
     icon: 'pi pi-exclamation-triangle',
@@ -79,5 +114,11 @@ export const QUERY_PRESETS: readonly QueryPreset[] = [
 
 /** Applies a preset on top of the defaults, so options from an earlier query don't leak in. */
 export function applyPreset(base: QueryRequest, preset: QueryPreset): QueryRequest {
-  return { ...base, sendApiKey: true, includePreReleases: false, ...preset.request };
+  return {
+    ...base,
+    sendApiKey: true,
+    includePreReleases: false,
+    categories: [],
+    ...preset.request,
+  };
 }

@@ -19,7 +19,7 @@ public sealed class ApplicationsApiTests : IDisposable
 
         created.ApiKey.Should().StartWith(created.Application.ApiKeyPrefix);
 
-        var list = await client.GetFromJsonAsync<List<ApplicationDto>>("/api/v1/applications");
+        var list = await client.GetFromJsonAsync<List<ApplicationDto>>("/api/v1/applications", TestJson.Options);
         list.Should().ContainSingle(a => a.Name == "Portal" && a.IconUrl == "https://example.com/icon.png");
     }
 
@@ -49,7 +49,7 @@ public sealed class ApplicationsApiTests : IDisposable
         var created = await client.CreateApplicationAsync();
 
         var response = await client.PostAsync($"/api/v1/applications/{created.Application.Id}/api-key", null);
-        var regenerated = (await response.Content.ReadFromJsonAsync<ApplicationWithApiKeyDto>())!;
+        var regenerated = (await response.Content.ReadFromJsonAsync<ApplicationWithApiKeyDto>(TestJson.Options))!;
 
         regenerated.ApiKey.Should().NotBe(created.ApiKey);
         (await SendPublicAsync(created.Application.Id, created.ApiKey)).StatusCode.Should().Be(HttpStatusCode.Unauthorized);

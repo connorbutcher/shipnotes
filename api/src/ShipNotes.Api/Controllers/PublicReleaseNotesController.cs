@@ -12,6 +12,8 @@ namespace ShipNotes.Api.Controllers;
 /// Read-only API for consuming applications. Every request must send the application's API key
 /// in <c>X-Api-Key</c>, and the key must belong to the application in the route: a missing or
 /// unknown key gets 401, a key for a different application gets 403.
+/// Note endpoints accept <c>category</c> (repeated or comma-separated, e.g. <c>?category=fixed,security</c>)
+/// to return only notes with those categories, and only those sections of them.
 /// </summary>
 [ApiController]
 [Route("api/v1/public/applications/{applicationId:guid}")]
@@ -39,14 +41,21 @@ public sealed class PublicReleaseNotesController(IPublicReleaseNoteService relea
         CancellationToken cancellationToken) =>
         releaseNotes.ListBetweenAsync(applicationId, query, cancellationToken);
 
+    /// <summary>The newest published note; with <c>category</c>, the newest that has one of those categories.</summary>
     [HttpGet("release-notes/latest")]
     public Task<PublicReleaseNoteDto> GetLatest(
         Guid applicationId,
         [FromQuery] bool includePreReleases,
+        [FromQuery] string[]? category,
         CancellationToken cancellationToken) =>
-        releaseNotes.GetLatestAsync(applicationId, includePreReleases, cancellationToken);
+        releaseNotes.GetLatestAsync(applicationId, includePreReleases, category, cancellationToken);
 
+    /// <summary>The note for one version; <c>category</c> narrows which of its sections are returned.</summary>
     [HttpGet("release-notes/{version}")]
-    public Task<PublicReleaseNoteDto> GetByVersion(Guid applicationId, string version, CancellationToken cancellationToken) =>
-        releaseNotes.GetByVersionAsync(applicationId, version, cancellationToken);
+    public Task<PublicReleaseNoteDto> GetByVersion(
+        Guid applicationId,
+        string version,
+        [FromQuery] string[]? category,
+        CancellationToken cancellationToken) =>
+        releaseNotes.GetByVersionAsync(applicationId, version, category, cancellationToken);
 }

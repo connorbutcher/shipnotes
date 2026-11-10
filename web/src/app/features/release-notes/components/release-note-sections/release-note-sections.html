@@ -1,0 +1,13 @@
+@for (section of sections().controls; track section; let i = $index) {
+  <app-release-note-section
+    [section]="section"
+    [uploadImage]="uploadImage()"
+    (removed)="remove(i)"
+  />
+} @empty {
+  <p class="hint text-muted text-sm">
+    Group changes by kind, so apps can filter and style them: add a section for each kind of change
+    in this release.
+  </p>
+}
+<app-category-picker [available]="available()" (picked)="add($event)" />

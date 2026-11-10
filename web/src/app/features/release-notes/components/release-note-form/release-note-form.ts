@@ -8,7 +8,7 @@ import {
   output,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
@@ -17,6 +17,8 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
 import { isPreRelease, semverValidator } from '../../../../shared/validators/semver.validator';
 import { normalizeEditorHtml } from '../../../../shared/utils/editor-html';
+import { SectionForm, setSections, toSectionRequests } from '../../forms/section-form';
+import { ReleaseNoteSections } from '../release-note-sections/release-note-sections';
 import { ImageUploader } from '../rich-text-editor/editor-image-upload';
 import { RichTextEditor } from '../rich-text-editor/rich-text-editor';
 
@@ -35,6 +37,7 @@ const TITLE_MAX_LENGTH = 200;
     Tag,
     ToggleSwitch,
     RichTextEditor,
+    ReleaseNoteSections,
   ],
   templateUrl: './release-note-form.html',
   styleUrl: './release-note-form.scss',
@@ -52,7 +55,8 @@ export class ReleaseNoteForm {
   protected readonly form = this.fb.group({
     version: ['', [Validators.required, semverValidator]],
     title: ['', [Validators.required, Validators.maxLength(TITLE_MAX_LENGTH)]],
-    contentHtml: [''],
+    summaryHtml: [''],
+    sections: new FormArray<SectionForm>([]),
     isPublished: [false],
   });
 
@@ -65,10 +69,11 @@ export class ReleaseNoteForm {
     effect(() => {
       const note = this.releaseNote();
       if (note) {
+        setSections(this.form.controls.sections, note.sections);
         this.form.reset({
           version: note.version,
           title: note.title,
-          contentHtml: note.contentHtml,
+          summaryHtml: note.summaryHtml,
           isPublished: note.isPublished,
         });
       }
@@ -81,12 +86,17 @@ export class ReleaseNoteForm {
       return;
     }
 
+    this.saved.emit(this.toRequest());
+  }
+
+  private toRequest(): SaveReleaseNoteRequest {
     const value = this.form.getRawValue();
-    this.saved.emit({
-      ...value,
+    return {
       version: value.version.trim(),
       title: value.title.trim(),
-      contentHtml: normalizeEditorHtml(value.contentHtml),
-    });
+      summaryHtml: normalizeEditorHtml(value.summaryHtml),
+      sections: toSectionRequests(value.sections),
+      isPublished: value.isPublished,
+    };
   }
 }

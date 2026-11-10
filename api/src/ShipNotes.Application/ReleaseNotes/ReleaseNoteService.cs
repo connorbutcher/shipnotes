@@ -36,8 +36,8 @@ internal sealed class ReleaseNoteService(
         await EnsureVersionIsUniqueAsync(applicationId, version, null, cancellationToken);
 
         var now = clock.GetUtcNow();
-        var content = await noteMedia.PrepareContentAsync(applicationId, releaseNoteId: null, request.ContentHtml, cancellationToken);
-        var note = ReleaseNote.Create(applicationId, version, request.Title, content.Html, now);
+        var content = await noteMedia.PrepareContentAsync(applicationId, releaseNoteId: null, request.ToContent(), cancellationToken);
+        var note = ReleaseNote.Create(applicationId, version, request.Title, content.Content, now);
         ApplyPublishState(note, request.IsPublished, now);
 
         releaseNotes.Add(note);
@@ -56,8 +56,8 @@ internal sealed class ReleaseNoteService(
         await EnsureVersionIsUniqueAsync(applicationId, version, id, cancellationToken);
 
         var now = clock.GetUtcNow();
-        var content = await noteMedia.PrepareContentAsync(applicationId, note.Id, request.ContentHtml, cancellationToken);
-        note.Update(version, request.Title, content.Html, now);
+        var content = await noteMedia.PrepareContentAsync(applicationId, note.Id, request.ToContent(), cancellationToken);
+        note.Update(version, request.Title, content.Content, now);
         ApplyPublishState(note, request.IsPublished, now);
 
         var removedMedia = await noteMedia.SyncAsync(note, content, cancellationToken);

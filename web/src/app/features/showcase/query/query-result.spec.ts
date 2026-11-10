@@ -4,6 +4,8 @@ const note = {
   version: '1.0.0',
   isPreRelease: false,
   title: 'One',
+  summaryHtml: '<p>x</p>',
+  sections: [],
   contentHtml: '<p>x</p>',
   publishedAt: '',
 };

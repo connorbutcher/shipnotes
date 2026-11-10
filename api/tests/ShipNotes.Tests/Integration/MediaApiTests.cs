@@ -24,7 +24,7 @@ public sealed class MediaApiTests : IDisposable
         var app = await client.CreateApplicationAsync();
 
         var response = await client.PostMediaAsync(app.Application.Id, ApiClientExtensions.TinyPng);
-        var media = (await response.Content.ReadFromJsonAsync<MediaDto>())!;
+        var media = (await response.Content.ReadFromJsonAsync<MediaDto>(TestJson.Options))!;
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         media.Url.Should().Be($"http://localhost/api/v1/media/{media.Id}/screen-shot.png");
@@ -73,7 +73,7 @@ public sealed class MediaApiTests : IDisposable
 
         var note = await client.CreateReleaseNoteAsync(app.Application.Id, "1.0.0", content: html);
 
-        note.ContentHtml.Should().Be($"<p>New</p><p><img src=\"{media.Url}\" alt=\"Shot\"></p><p></p><p></p>");
+        note.SummaryHtml.Should().Be($"<p>New</p><p><img src=\"{media.Url}\" alt=\"Shot\"></p><p></p><p></p>");
         (await FindMediaAsync(media.Id))!.ReleaseNoteId.Should().Be(note.Id);
     }
 
@@ -85,7 +85,7 @@ public sealed class MediaApiTests : IDisposable
         await client.CreateReleaseNoteAsync(app.Application.Id, "1.0.0", content: $"<p><img src=\"{media.Url}\"></p>");
 
         using var request = new HttpRequestMessage(HttpMethod.Get, $"/api/v1/public/applications/{app.Application.Id}/release-notes/latest").WithApiKey(app.ApiKey);
-        var latest = await (await client.SendAsync(request)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>();
+        var latest = await (await client.SendAsync(request)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>(TestJson.Options);
 
         latest!.ContentHtml.Should().Contain(media.Url);
         (await client.GetAsync(media.Url)).StatusCode.Should().Be(HttpStatusCode.OK);
@@ -105,7 +105,7 @@ public sealed class MediaApiTests : IDisposable
             "2.0.0",
             content: $"<p><img src=\"{foreign.Url}\"><img src=\"{own.Url}\"></p>");
 
-        note.ContentHtml.Should().Be("<p></p>");
+        note.SummaryHtml.Should().BeEmpty("a summary left with nothing to show is stored empty");
     }
 
     [Fact]
@@ -121,7 +121,8 @@ public sealed class MediaApiTests : IDisposable
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/applications/{app.Application.Id}/release-notes/{note.Id}",
-            new SaveReleaseNoteRequest("1.0.0", "Release", $"<p><img src=\"{kept.Url}\"></p>", true));
+            new SaveReleaseNoteRequest("1.0.0", "Release", $"<p><img src=\"{kept.Url}\"></p>", [], true),
+            TestJson.Options);
 
         response.EnsureSuccessStatusCode();
         (await FindMediaAsync(kept.Id)).Should().NotBeNull();

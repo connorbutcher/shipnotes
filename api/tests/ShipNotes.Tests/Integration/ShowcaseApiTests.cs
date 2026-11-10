@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using ShipNotes.Domain.ReleaseNotes;
 using ShipNotes.Application.Applications;
 using ShipNotes.Application.PublicApi;
 using ShipNotes.Application.Showcase;
@@ -44,6 +45,17 @@ public sealed class ShowcaseApiTests : IDisposable
     }
 
     [Fact]
+    public async Task Seeded_notes_cover_every_category()
+    {
+        var session = await StartAsync();
+
+        var notes = await GetPublicAsync<List<PublicReleaseNoteDto>>(session, "/release-notes?includePreReleases=true");
+
+        notes.SelectMany(n => n.Sections).Select(s => s.Category).Distinct()
+            .Should().BeEquivalentTo(ReleaseNoteCategories.All);
+    }
+
+    [Fact]
     public async Task The_draft_note_is_never_returned_publicly()
     {
         var session = await StartAsync();
@@ -66,7 +78,7 @@ public sealed class ShowcaseApiTests : IDisposable
         (await SendPublicAsync(first, "/release-notes")).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         (await SendPublicAsync(second, "/release-notes")).StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var applications = await client.GetFromJsonAsync<List<ApplicationDto>>("/api/v1/applications");
+        var applications = await client.GetFromJsonAsync<List<ApplicationDto>>("/api/v1/applications", TestJson.Options);
         applications!.Should().ContainSingle(a => a.Id == ShowcaseDefaults.ApplicationId);
     }
 
@@ -78,7 +90,7 @@ public sealed class ShowcaseApiTests : IDisposable
 
         var response = await client.PostAsync("/api/v1/showcase/reset", null);
         response.EnsureSuccessStatusCode();
-        var reset = (await response.Content.ReadFromJsonAsync<ShowcaseSessionDto>())!;
+        var reset = (await response.Content.ReadFromJsonAsync<ShowcaseSessionDto>(TestJson.Options))!;
 
         (await SendPublicAsync(reset, "/release-notes/9.9.9")).StatusCode.Should().Be(HttpStatusCode.NotFound);
         (await GetPublicAsync<PublicReleaseNoteDto>(reset, "/release-notes/latest")).Version.Should().Be("2.0.0");
@@ -118,7 +130,7 @@ public sealed class ShowcaseApiTests : IDisposable
     {
         var response = await client.PostAsync("/api/v1/showcase/session", null);
         response.IsSuccessStatusCode.Should().BeTrue(await response.Content.ReadAsStringAsync());
-        return (await response.Content.ReadFromJsonAsync<ShowcaseSessionDto>())!;
+        return (await response.Content.ReadFromJsonAsync<ShowcaseSessionDto>(TestJson.Options))!;
     }
 
     private Task<HttpResponseMessage> SendPublicAsync(ShowcaseSessionDto session, string path) =>
@@ -130,6 +142,6 @@ public sealed class ShowcaseApiTests : IDisposable
     {
         var response = await SendPublicAsync(session, path);
         response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
-        return (await response.Content.ReadFromJsonAsync<T>())!;
+        return (await response.Content.ReadFromJsonAsync<T>(TestJson.Options))!;
     }
 }

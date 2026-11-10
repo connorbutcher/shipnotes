@@ -40,9 +40,18 @@
     </div>
   </div>
 
-  <div class="field" role="group" aria-labelledby="note-content-label">
-    <span id="note-content-label" class="label">Notes</span>
-    <app-rich-text-editor [control]="form.controls.contentHtml" [uploadImage]="uploadImage()" />
+  <div class="field" role="group" aria-labelledby="note-summary-label">
+    <span id="note-summary-label" class="label">Summary <em>(optional)</em></span>
+    <app-rich-text-editor
+      [control]="form.controls.summaryHtml"
+      [uploadImage]="uploadImage()"
+      placeholder="Introduce the release: highlights, screenshots…"
+    />
+  </div>
+
+  <div class="field" role="group" aria-labelledby="note-sections-label">
+    <span id="note-sections-label" class="label">Changes by category</span>
+    <app-release-note-sections [sections]="form.controls.sections" [uploadImage]="uploadImage()" />
   </div>
 
   <div class="footer">
