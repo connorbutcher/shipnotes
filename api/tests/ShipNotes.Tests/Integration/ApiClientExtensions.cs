@@ -13,7 +13,7 @@ internal static class ApiClientExtensions
     {
         var response = await client.PostAsJsonAsync("/api/v1/applications", new SaveApplicationRequest(name, "https://example.com/icon.png"));
         response.EnsureSuccessStatusCode();
-        return (await response.Content.ReadFromJsonAsync<ApplicationWithApiKeyDto>())!;
+        return (await response.Content.ReadFromJsonAsync<ApplicationWithApiKeyDto>(TestJson.Options))!;
     }
 
     public static async Task<ReleaseNoteDto> CreateReleaseNoteAsync(
@@ -21,13 +21,15 @@ internal static class ApiClientExtensions
         Guid applicationId,
         string version,
         bool isPublished = true,
-        string content = "<p>Changes</p>")
+        string content = "<p>Changes</p>",
+        params ReleaseNoteSectionDto[] sections)
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/applications/{applicationId}/release-notes",
-            new SaveReleaseNoteRequest(version, $"Release {version}", content, isPublished));
+            new SaveReleaseNoteRequest(version, $"Release {version}", content, sections, isPublished),
+            TestJson.Options);
         response.IsSuccessStatusCode.Should().BeTrue(await response.Content.ReadAsStringAsync());
-        return (await response.Content.ReadFromJsonAsync<ReleaseNoteDto>())!;
+        return (await response.Content.ReadFromJsonAsync<ReleaseNoteDto>(TestJson.Options))!;
     }
 
     /// <summary>The smallest valid PNG: a 1x1 transparent pixel.</summary>
@@ -51,7 +53,7 @@ internal static class ApiClientExtensions
     {
         var response = await client.PostMediaAsync(applicationId, TinyPng);
         response.IsSuccessStatusCode.Should().BeTrue(await response.Content.ReadAsStringAsync());
-        return (await response.Content.ReadFromJsonAsync<MediaDto>())!;
+        return (await response.Content.ReadFromJsonAsync<MediaDto>(TestJson.Options))!;
     }
 
     public static HttpRequestMessage WithApiKey(this HttpRequestMessage request, string apiKey)

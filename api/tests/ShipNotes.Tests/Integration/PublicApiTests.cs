@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using ShipNotes.Application.PublicApi;
+using ShipNotes.Application.ReleaseNotes;
+using ShipNotes.Domain.ReleaseNotes;
 
 namespace ShipNotes.Tests.Integration;
 
@@ -19,6 +21,7 @@ public sealed class PublicApiTests : IDisposable
         "/release-notes/latest",
         "/release-notes/1.0.0",
         "/release-notes/between?from=1.0.0&to=2.0.0",
+        "/release-notes?category=fixed",
     ];
 
     [Theory]
@@ -125,6 +128,11 @@ public sealed class PublicApiTests : IDisposable
     [InlineData("/release-notes/between?from=2.0.0&to=1.10.0")]
     [InlineData("/release-notes?after=latest")]
     [InlineData("/release-notes?limit=500")]
+    [InlineData("/release-notes?category=bugs")]
+    [InlineData("/release-notes?category=1")]
+    [InlineData("/release-notes/latest?category=fixed,nope")]
+    [InlineData("/release-notes/1.0.0?category=nope")]
+    [InlineData("/release-notes/between?from=1.0.0&to=2.0.0&category=nope")]
     public async Task Invalid_query_values_are_rejected(string path)
     {
         var app = await SeedAsync();
@@ -139,8 +147,8 @@ public sealed class PublicApiTests : IDisposable
         var app = await SeedAsync();
         var baseUrl = $"/api/v1/public/applications/{app.Id}/release-notes";
 
-        var latest = await (await GetAsync($"{baseUrl}/latest", app.ApiKey)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>();
-        var byVersion = await (await GetAsync($"{baseUrl}/1.1.0", app.ApiKey)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>();
+        var latest = await (await GetAsync($"{baseUrl}/latest", app.ApiKey)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>(TestJson.Options);
+        var byVersion = await (await GetAsync($"{baseUrl}/1.1.0", app.ApiKey)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>(TestJson.Options);
         var draft = await GetAsync($"{baseUrl}/3.0.0", app.ApiKey);
 
         latest!.Version.Should().Be("2.0.0");
@@ -149,11 +157,94 @@ public sealed class PublicApiTests : IDisposable
     }
 
     [Fact]
+    public async Task Notes_include_their_sections_and_composed_html()
+    {
+        var app = await SeedCategorisedAsync();
+
+        var note = await GetNoteAsync(app, "/release-notes/2.0.0");
+
+        note.SummaryHtml.Should().Be("<p>Big release</p>");
+        note.Sections.Select(s => (s.Category, s.Label)).Should().Equal(
+            (ReleaseNoteCategory.Breaking, "Breaking changes"),
+            (ReleaseNoteCategory.Added, "Added"),
+            (ReleaseNoteCategory.Security, "Security"));
+        note.ContentHtml.Should().Be(
+            "<p>Big release</p>" +
+            "<section data-category=\"breaking\"><h2>Breaking changes</h2><p>v1 API removed</p></section>" +
+            "<section data-category=\"added\"><h2>Added</h2><p>Calendar</p></section>" +
+            "<section data-category=\"security\"><h2>Security</h2><p>Shorter sessions</p></section>");
+    }
+
+    [Fact]
+    public async Task Categories_are_serialised_as_camel_case_names()
+    {
+        var app = await SeedCategorisedAsync();
+
+        var json = await (await GetAsync($"/api/v1/public/applications/{app.Id}/release-notes/1.0.1", app.ApiKey)).Content.ReadAsStringAsync();
+
+        json.Should().Contain("\"category\":\"fixed\"").And.Contain("\"label\":\"Fixed\"");
+    }
+
+    [Theory]
+    [InlineData("?category=security")]
+    [InlineData("?category=SECURITY")]
+    public async Task List_can_be_filtered_by_category(string query)
+    {
+        var app = await SeedCategorisedAsync();
+
+        var notes = await GetNotesAsync(app, "/release-notes" + query);
+
+        notes.Select(n => n.Version).Should().Equal("2.0.0", "1.0.1");
+        notes.SelectMany(n => n.Sections).Should().OnlyContain(s => s.Category == ReleaseNoteCategory.Security);
+        notes[0].ContentHtml.Should().NotContain("Calendar").And.Contain("Shorter sessions");
+    }
+
+    [Theory]
+    [InlineData("&category=breaking,fixed")]
+    [InlineData("&category=breaking&category=fixed")]
+    public async Task Several_categories_can_be_requested(string query)
+    {
+        var app = await SeedCategorisedAsync();
+
+        var notes = await GetNotesAsync(app, "/release-notes/between?from=1.0.0&to=2.0.0" + query);
+
+        notes.Select(n => (n.Version, string.Join(",", n.Sections.Select(s => s.Category)))).Should().Equal(
+            ("2.0.0", "Breaking"),
+            ("1.0.1", "Fixed"));
+    }
+
+    [Fact]
+    public async Task Limit_applies_after_the_category_filter()
+    {
+        var app = await SeedCategorisedAsync();
+
+        var notes = await GetNotesAsync(app, "/release-notes?category=fixed&limit=1");
+
+        notes.Select(n => n.Version).Should().Equal("1.0.1");
+    }
+
+    [Fact]
+    public async Task Latest_and_by_version_honour_the_category_filter()
+    {
+        var app = await SeedCategorisedAsync();
+        const string baseUrl = "/release-notes";
+
+        var latestFix = await GetNoteAsync(app, $"{baseUrl}/latest?category=fixed");
+        var onlySecurity = await GetNoteAsync(app, $"{baseUrl}/2.0.0?category=security");
+        var noRemovals = await GetAsync($"/api/v1/public/applications/{app.Id}{baseUrl}/latest?category=removed", app.ApiKey);
+
+        latestFix.Version.Should().Be("1.0.1");
+        onlySecurity.Sections.Should().ContainSingle().Which.Category.Should().Be(ReleaseNoteCategory.Security);
+        onlySecurity.SummaryHtml.Should().Be("<p>Big release</p>");
+        noRemovals.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task Application_details_are_returned()
     {
         var app = await SeedAsync();
 
-        var details = await (await GetAsync($"/api/v1/public/applications/{app.Id}", app.ApiKey)).Content.ReadFromJsonAsync<PublicApplicationDto>();
+        var details = await (await GetAsync($"/api/v1/public/applications/{app.Id}", app.ApiKey)).Content.ReadFromJsonAsync<PublicApplicationDto>(TestJson.Options);
 
         details!.Name.Should().Be("Portal");
     }
@@ -178,6 +269,34 @@ public sealed class PublicApiTests : IDisposable
         return new SeededApp(id, app.ApiKey);
     }
 
+    private async Task<SeededApp> SeedCategorisedAsync()
+    {
+        var app = await client.CreateApplicationAsync("Categorised");
+        var id = app.Application.Id;
+        await client.CreateReleaseNoteAsync(id, "1.0.0", content: "<p>First</p>", sections: [new ReleaseNoteSectionDto(ReleaseNoteCategory.Added, "<p>Inbox</p>")]);
+        await client.CreateReleaseNoteAsync(
+            id,
+            "1.0.1",
+            content: "",
+            sections: [new ReleaseNoteSectionDto(ReleaseNoteCategory.Fixed, "<p>Crash</p>"),
+            new ReleaseNoteSectionDto(ReleaseNoteCategory.Security, "<p>Token leak</p>")]);
+        await client.CreateReleaseNoteAsync(
+            id,
+            "2.0.0",
+            content: "<p>Big release</p>",
+            sections: [new ReleaseNoteSectionDto(ReleaseNoteCategory.Security, "<p>Shorter sessions</p>"),
+            new ReleaseNoteSectionDto(ReleaseNoteCategory.Added, "<p>Calendar</p>"),
+            new ReleaseNoteSectionDto(ReleaseNoteCategory.Breaking, "<p>v1 API removed</p>")]);
+        return new SeededApp(id, app.ApiKey);
+    }
+
+    private async Task<PublicReleaseNoteDto> GetNoteAsync(SeededApp app, string path)
+    {
+        var response = await GetAsync($"/api/v1/public/applications/{app.Id}{path}", app.ApiKey);
+        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        return (await response.Content.ReadFromJsonAsync<PublicReleaseNoteDto>(TestJson.Options))!;
+    }
+
     private Task<HttpResponseMessage> GetAsync(string url, string apiKey) =>
         client.SendAsync(new HttpRequestMessage(HttpMethod.Get, url).WithApiKey(apiKey));
 
@@ -185,6 +304,6 @@ public sealed class PublicApiTests : IDisposable
     {
         var response = await GetAsync($"/api/v1/public/applications/{app.Id}{path}", app.ApiKey);
         response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
-        return (await response.Content.ReadFromJsonAsync<List<PublicReleaseNoteDto>>())!;
+        return (await response.Content.ReadFromJsonAsync<List<PublicReleaseNoteDto>>(TestJson.Options))!;
     }
 }

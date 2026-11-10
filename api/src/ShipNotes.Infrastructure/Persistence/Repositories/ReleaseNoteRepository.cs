@@ -35,6 +35,12 @@ internal sealed class ReleaseNoteRepository(ShipNotesDbContext db) : IReleaseNot
             notes = notes.Where(n => n.VersionSortKey.CompareTo(upTo) <= 0);
         }
 
+        if (query.Categories is { Count: > 0 } categories)
+        {
+            var wanted = categories.ToList();
+            notes = notes.Where(n => n.Sections.Any(s => wanted.Contains(s.Category)));
+        }
+
         notes = notes.OrderByDescending(n => n.VersionSortKey);
 
         if (query.Limit is { } limit)

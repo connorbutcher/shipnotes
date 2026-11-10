@@ -141,3 +141,38 @@ END;
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261110214513_AddReleaseNoteSections'
+)
+BEGIN
+    EXEC sp_rename N'[ReleaseNotes].[ContentHtml]', N'SummaryHtml', 'COLUMN';
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261110214513_AddReleaseNoteSections'
+)
+BEGIN
+    CREATE TABLE [ReleaseNoteSections] (
+        [Category] varchar(20) NOT NULL,
+        [ReleaseNoteId] uniqueidentifier NOT NULL,
+        [ContentHtml] nvarchar(max) NOT NULL,
+        CONSTRAINT [PK_ReleaseNoteSections] PRIMARY KEY ([ReleaseNoteId], [Category]),
+        CONSTRAINT [FK_ReleaseNoteSections_ReleaseNotes_ReleaseNoteId] FOREIGN KEY ([ReleaseNoteId]) REFERENCES [ReleaseNotes] ([Id]) ON DELETE CASCADE
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261110214513_AddReleaseNoteSections'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261110214513_AddReleaseNoteSections', N'10.0.14');
+END;
+
+COMMIT;
+GO
+
