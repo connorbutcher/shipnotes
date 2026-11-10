@@ -2,7 +2,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem 1rem;
+  gap: var(--space-3) var(--space-4);
   width: 100%;
 }
 
@@ -13,17 +13,17 @@
 }
 
 code {
-  padding: 0.4rem 0.6rem;
-  border-radius: var(--p-border-radius-sm);
-  background: var(--p-content-background);
-  color: var(--p-text-color);
-  font-size: 0.85rem;
+  padding: var(--space-1-5) var(--space-2-5);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
   word-break: break-all;
 }
 
 .actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 :host ::ng-deep .p-message-text {

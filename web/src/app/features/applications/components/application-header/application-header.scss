@@ -1,11 +1,11 @@
 :host {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 h1 {
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--space-1);
 }
 
 :host ::ng-deep .p-tag-label {

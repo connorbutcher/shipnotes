@@ -3,15 +3,16 @@
 }
 
 :host ::ng-deep .ql-toolbar {
-  border-radius: var(--p-border-radius-md) var(--p-border-radius-md) 0 0;
-  border-color: var(--p-content-border-color);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-color: var(--color-border);
 }
 
 :host ::ng-deep .ql-container {
-  border-radius: 0 0 var(--p-border-radius-md) var(--p-border-radius-md);
-  border-color: var(--p-content-border-color);
+  min-height: var(--editor-min-height);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  border-color: var(--color-border);
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }
 
 quill-editor {

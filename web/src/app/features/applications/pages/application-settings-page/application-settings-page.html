@@ -3,7 +3,7 @@
 </p-card>
 
 <p-card header="API key">
-  <p class="muted">
+  <p class="text-muted">
     The current key starts with <code>{{ application()?.apiKeyPrefix }}</code
     >. Keys are stored hashed, so a lost key can't be recovered; issue a new one instead.
   </p>
@@ -21,7 +21,7 @@
 </p-card>
 
 <p-card header="Delete application" styleClass="danger-zone">
-  <p class="muted">Removes the application and all of its release notes.</p>
+  <p class="text-muted">Removes the application and all of its release notes.</p>
   <button pButton type="button" severity="danger" [disabled]="busy()" (click)="delete()">
     <i class="pi pi-trash" pButtonIcon></i>
     <span pButtonLabel>Delete application</span>

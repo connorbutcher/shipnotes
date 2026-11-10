@@ -1,8 +1,8 @@
 form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-width: 32rem;
+  gap: var(--space-4);
+  max-width: var(--form-max-width);
 }
 
 .preview {

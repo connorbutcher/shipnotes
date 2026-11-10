@@ -91,6 +91,10 @@
   max-width: var(--form-max-width);
 }
 
+.max-w-narrow {
+  max-width: var(--narrow-max-width);
+}
+
 .max-w-prose {
   max-width: var(--prose-max-width);
 }

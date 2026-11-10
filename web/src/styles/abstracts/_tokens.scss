@@ -33,6 +33,7 @@ $font-sizes: (
   'lg': 1.125rem,
   'xl': 1.25rem,
   '2xl': 1.5rem,
+  '3xl': 2.5rem,
 );
 
 $font-weights: (
@@ -51,10 +52,12 @@ $letter-spacings: (
   'wide': 0.04em,
 );
 
+// Radii follow the PrimeNG theme so custom elements match its components.
 $radii: (
-  'sm': 0.375rem,
-  'md': 0.5rem,
-  'lg': 0.625rem,
+  'sm': var(--p-border-radius-sm),
+  'md': var(--p-border-radius-md),
+  'lg': var(--p-border-radius-lg),
+  'xl': var(--p-border-radius-xl),
   'full': 9999px,
 );
 
@@ -67,40 +70,34 @@ $shadows: (
   'md': 0 0.375rem 1.5rem rgb(15 23 42 / 0.12),
 );
 
-$z-indices: (
-  'toast': 1000,
-);
-
 $layout: (
   'side-panel-width': 16.25rem,
   'content-max-width': 60rem,
   'form-max-width': 32rem,
   'prose-max-width': 28rem,
+  'narrow-max-width': 40rem,
+  'editor-min-height': 18rem,
 );
 
-// Semantic colours. Each falls back to a hard-coded value so the app looks right
-// with or without a PrimeNG theme; when a theme is present its --p-* variables win.
+// Semantic colours, mapped onto the PrimeNG theme's --p-* variables so the app has
+// one palette. Use these (e.g. var(--color-muted)) rather than --p-* directly.
 $colors: (
-  'bg': var(--p-surface-50, #f8fafc),
-  'surface': var(--p-surface-0, #ffffff),
-  'sidebar': var(--p-surface-100, #f1f5f9),
-  'border': var(--p-content-border-color, #e2e8f0),
-  'hover': var(--p-content-hover-background, #e9eef5),
-  'text': var(--p-text-color, #0f172a),
-  'muted': var(--p-text-muted-color, #64748b),
-  'on-accent': var(--p-primary-contrast-color, #ffffff),
-  'accent': var(--p-primary-color, #4f46e5),
-  'accent-hover': var(--p-primary-hover-color, #4338ca),
-  'accent-soft': var(--p-primary-100, #e0e7ff),
-  'success': var(--p-green-700, #15803d),
-  'success-soft': var(--p-green-100, #dcfce7),
-  'warning': var(--p-yellow-700, #a16207),
-  'warning-soft': var(--p-yellow-100, #fef9c3),
-  'warning-border': var(--p-yellow-300, #fde047),
-  'danger': var(--p-red-600, #dc2626),
-  'danger-hover': var(--p-red-700, #b91c1c),
-  'danger-border': var(--p-red-200, #fecaca),
-  'neutral-soft': var(--p-surface-200, #e2e8f0),
-  'code-bg': var(--p-surface-900, #0f172a),
-  'code-text': var(--p-surface-200, #e2e8f0),
+  'bg': var(--p-surface-50),
+  'surface': var(--p-content-background),
+  'sidebar': var(--p-surface-100),
+  'border': var(--p-content-border-color),
+  'hover': var(--p-content-hover-background),
+  'text': var(--p-text-color),
+  'muted': var(--p-text-muted-color),
+  'accent': var(--p-primary-color),
+  'accent-soft': var(--p-primary-100),
+  'accent-strong': var(--p-primary-700),
+  'highlight-bg': var(--p-highlight-background),
+  'highlight-text': var(--p-highlight-color),
+  'success': var(--p-green-700),
+  'warning': var(--p-yellow-700),
+  'danger': var(--p-red-600),
+  'danger-border': var(--p-red-200),
+  'code-bg': var(--p-surface-900),
+  'code-text': var(--p-surface-200),
 );

@@ -1,6 +1,11 @@
 :host {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 2rem 0;
+  gap: var(--space-3);
+  padding: var(--space-8) 0;
+}
+
+p-progress-spinner {
+  width: var(--space-10);
+  height: var(--space-10);
 }

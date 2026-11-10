@@ -2,23 +2,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 4rem 1rem;
+  gap: var(--space-2);
+  padding: var(--space-16) var(--space-4);
   text-align: center;
-  color: var(--p-text-muted-color);
+  color: var(--color-muted);
 }
 
 .pi {
-  font-size: 2.5rem;
-  color: var(--p-primary-color);
+  font-size: var(--font-size-3xl);
+  color: var(--color-accent);
 }
 
 h2 {
+  font-size: var(--font-size-xl);
   margin: 0;
-  color: var(--p-text-color);
+  color: var(--color-text);
 }
 
 p {
-  margin: 0 0 1rem;
-  max-width: 28rem;
+  margin: 0 0 var(--space-4);
+  max-width: var(--prose-max-width);
 }

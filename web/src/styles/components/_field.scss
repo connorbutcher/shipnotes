@@ -1,0 +1,16 @@
+// A labelled form control with optional hint and validation message.
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+
+  > label,
+  > .label {
+    font-weight: var(--font-weight-medium);
+  }
+
+  em {
+    font-weight: var(--font-weight-regular);
+    color: var(--color-muted);
+  }
+}
