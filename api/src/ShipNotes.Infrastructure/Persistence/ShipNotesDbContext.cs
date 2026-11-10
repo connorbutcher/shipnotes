@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShipNotes.Application.Abstractions;
 using ShipNotes.Domain.Applications;
+using ShipNotes.Domain.Media;
 using ShipNotes.Domain.ReleaseNotes;
 
 namespace ShipNotes.Infrastructure.Persistence;
@@ -13,6 +14,8 @@ public sealed class ShipNotesDbContext(DbContextOptions<ShipNotesDbContext> opti
     public DbSet<ClientApplication> Applications => Set<ClientApplication>();
 
     public DbSet<ReleaseNote> ReleaseNotes => Set<ReleaseNote>();
+
+    public DbSet<MediaData> Media => Set<MediaData>();
 
     async Task IUnitOfWork.SaveChangesAsync(CancellationToken cancellationToken) =>
         await SaveChangesAsync(cancellationToken);

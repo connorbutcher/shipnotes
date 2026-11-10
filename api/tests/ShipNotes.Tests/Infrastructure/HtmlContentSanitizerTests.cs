@@ -22,4 +22,14 @@ public sealed class HtmlContentSanitizerTests
     [InlineData("<iframe src=\"https://evil\"></iframe><p>ok</p>", "<p>ok</p>")]
     public void Removes_unsafe_markup(string input, string expected) =>
         sanitizer.Sanitize(input).Should().Be(expected);
+
+    [Fact]
+    public void Removes_images_unless_the_caller_resolves_their_source()
+    {
+        const string html = "<p><img src=\"https://example.com/a.png\" alt=\"A\"></p><p><img src=\"data:image/png;base64,AAAA\"></p>";
+
+        sanitizer.Sanitize(html).Should().Be("<p></p><p></p>");
+        sanitizer.Sanitize(html, src => src.StartsWith("https://", StringComparison.Ordinal) ? "https://cdn.test/a.png" : null)
+            .Should().Be("<p><img src=\"https://cdn.test/a.png\" alt=\"A\"></p><p></p>");
+    }
 }

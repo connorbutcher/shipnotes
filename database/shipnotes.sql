@@ -91,3 +91,53 @@ END;
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261110203454_AddMediaData'
+)
+BEGIN
+    CREATE TABLE [MediaData] (
+        [Id] uniqueidentifier NOT NULL,
+        [ApplicationId] uniqueidentifier NOT NULL,
+        [ReleaseNoteId] uniqueidentifier NULL,
+        [FileName] nvarchar(255) NOT NULL,
+        [ContentType] varchar(100) NOT NULL,
+        [SizeBytes] bigint NOT NULL,
+        [StoragePath] nvarchar(400) NOT NULL,
+        [CreatedAt] datetimeoffset NOT NULL,
+        [UpdatedAt] datetimeoffset NOT NULL,
+        CONSTRAINT [PK_MediaData] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_MediaData_Applications_ApplicationId] FOREIGN KEY ([ApplicationId]) REFERENCES [Applications] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_MediaData_ReleaseNotes_ReleaseNoteId] FOREIGN KEY ([ReleaseNoteId]) REFERENCES [ReleaseNotes] ([Id])
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261110203454_AddMediaData'
+)
+BEGIN
+    CREATE INDEX [IX_MediaData_ApplicationId] ON [MediaData] ([ApplicationId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261110203454_AddMediaData'
+)
+BEGIN
+    CREATE INDEX [IX_MediaData_ReleaseNoteId] ON [MediaData] ([ReleaseNoteId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261110203454_AddMediaData'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261110203454_AddMediaData', N'10.0.14');
+END;
+
+COMMIT;
+GO
+

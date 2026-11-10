@@ -4,13 +4,15 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { Card } from 'primeng/card';
 import { Message } from 'primeng/message';
-import { Observable, finalize, of } from 'rxjs';
+import { Observable, finalize, firstValueFrom, map, of } from 'rxjs';
+import { MediaApi } from '../../../../core/api/media-api';
 import { ReleaseNotesApi } from '../../../../core/api/release-notes-api';
 import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
 import { NotificationService } from '../../../../core/notifications/notification.service';
 import { ConfirmService } from '../../../../shared/services/confirm.service';
 import { LoadingState } from '../../../../shared/ui/loading-state/loading-state';
 import { ReleaseNoteForm } from '../../components/release-note-form/release-note-form';
+import { ImageUploader } from '../../components/rich-text-editor/editor-image-upload';
 
 /** Creates a release note, or edits one when a release note id is in the route. */
 @Component({
@@ -31,6 +33,7 @@ import { ReleaseNoteForm } from '../../components/release-note-form/release-note
 })
 export class ReleaseNoteEditorPage {
   private readonly api = inject(ReleaseNotesApi);
+  private readonly mediaApi = inject(MediaApi);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly notifications = inject(NotificationService);
@@ -41,6 +44,13 @@ export class ReleaseNoteEditorPage {
 
   protected readonly isNew = computed(() => !this.releaseNoteId());
   protected readonly saving = signal(false);
+
+  /** Uploads editor images to this application's media and returns the URL to embed. */
+  protected readonly uploadImage = computed<ImageUploader>(() => {
+    const applicationId = this.applicationId();
+    return (file) =>
+      firstValueFrom(this.mediaApi.upload(applicationId, file).pipe(map((media) => media.url)));
+  });
 
   protected readonly note = rxResource<
     ReleaseNote | null,

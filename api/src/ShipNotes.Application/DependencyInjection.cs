@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using ShipNotes.Application.Applications;
+using ShipNotes.Application.Media;
 using ShipNotes.Application.PublicApi;
 using ShipNotes.Application.ReleaseNotes;
 
@@ -16,6 +17,8 @@ public static class DependencyInjection
         services.AddScoped<IApplicationService, ApplicationService>();
         services.AddScoped<IReleaseNoteService, ReleaseNoteService>();
         services.AddScoped<IPublicReleaseNoteService, PublicReleaseNoteService>();
+        services.AddScoped<IMediaService, MediaService>();
+        services.AddScoped<IReleaseNoteMediaService, ReleaseNoteMediaService>();
 
         return services;
     }

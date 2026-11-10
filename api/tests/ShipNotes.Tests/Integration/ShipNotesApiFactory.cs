@@ -14,10 +14,14 @@ public sealed class ShipNotesApiFactory : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection connection = new("DataSource=:memory:");
 
+    /// <summary>Private media folder for this factory, deleted on dispose.</summary>
+    public string MediaRoot { get; } = Path.Combine(Path.GetTempPath(), "shipnotes-tests", Guid.NewGuid().ToString("N"));
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:ShipNotes", "unused");
+        builder.UseSetting("Media:RootPath", MediaRoot);
 
         builder.ConfigureServices(services =>
         {
@@ -39,6 +43,10 @@ public sealed class ShipNotesApiFactory : WebApplicationFactory<Program>
         if (disposing)
         {
             connection.Dispose();
+            if (Directory.Exists(MediaRoot))
+            {
+                Directory.Delete(MediaRoot, recursive: true);
+            }
         }
     }
 }

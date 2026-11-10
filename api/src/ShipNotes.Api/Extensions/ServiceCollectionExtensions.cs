@@ -2,6 +2,8 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
 using ShipNotes.Api.Authentication;
 using ShipNotes.Api.ErrorHandling;
+using ShipNotes.Api.Media;
+using ShipNotes.Application.Abstractions;
 
 namespace ShipNotes.Api.Extensions;
 
@@ -13,6 +15,8 @@ internal static class ServiceCollectionExtensions
         services.AddOpenApi();
         services.AddProblemDetails();
         services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IMediaUrlProvider, HttpMediaUrlProvider>();
 
         services.AddApiKeyAuthentication();
         services.AddShipNotesCors(configuration);

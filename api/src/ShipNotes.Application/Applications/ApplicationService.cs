@@ -8,6 +8,7 @@ namespace ShipNotes.Application.Applications;
 internal sealed class ApplicationService(
     IClientApplicationRepository applications,
     IApiKeyService apiKeys,
+    IMediaStorage mediaStorage,
     IUnitOfWork unitOfWork,
     IValidator<SaveApplicationRequest> validator,
     TimeProvider clock) : IApplicationService
@@ -63,6 +64,9 @@ internal sealed class ApplicationService(
         var application = await GetEntityAsync(id, cancellationToken);
         applications.Remove(application);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Release notes and their MediaData rows are removed by cascade; the files live outside the database.
+        mediaStorage.DeleteFolder(application.Id.ToString());
     }
 
     private async Task<ClientApplication> GetEntityAsync(Guid id, CancellationToken cancellationToken) =>

@@ -66,6 +66,51 @@ namespace ShipNotes.Infrastructure.Persistence.Migrations
                     b.ToTable("Applications", (string)null);
                 });
 
+            modelBuilder.Entity("ShipNotes.Domain.Media.MediaData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid?>("ReleaseNoteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StoragePath")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.HasIndex("ReleaseNoteId");
+
+                    b.ToTable("MediaData", (string)null);
+                });
+
             modelBuilder.Entity("ShipNotes.Domain.ReleaseNotes.ReleaseNote", b =>
                 {
                     b.Property<Guid>("Id")
@@ -116,6 +161,20 @@ namespace ShipNotes.Infrastructure.Persistence.Migrations
                     b.HasIndex("ApplicationId", "PublishedAt", "VersionSortKey");
 
                     b.ToTable("ReleaseNotes", (string)null);
+                });
+
+            modelBuilder.Entity("ShipNotes.Domain.Media.MediaData", b =>
+                {
+                    b.HasOne("ShipNotes.Domain.Applications.ClientApplication", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShipNotes.Domain.ReleaseNotes.ReleaseNote", null)
+                        .WithMany()
+                        .HasForeignKey("ReleaseNoteId")
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
 
             modelBuilder.Entity("ShipNotes.Domain.ReleaseNotes.ReleaseNote", b =>
