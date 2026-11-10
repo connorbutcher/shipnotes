@@ -1,0 +1,43 @@
+@use '../abstracts' as *;
+
+// Font size and weight helpers, e.g. .text-sm, .font-semibold.
+@include token-classes('text', (font-size), $font-sizes, 'font-size');
+@include token-classes('font', (font-weight), $font-weights, 'font-weight');
+@include token-classes('leading', (line-height), $line-heights, 'line-height');
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.uppercase {
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.truncate {
+  @include truncate;
+}
+
+.break-all {
+  word-break: break-all;
+}
+
+.no-underline {
+  text-decoration: none;
+}

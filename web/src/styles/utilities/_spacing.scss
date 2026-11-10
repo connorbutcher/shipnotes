@@ -1,0 +1,47 @@
+@use '../abstracts' as *;
+
+// Margin, padding and gap helpers for every spacing token, e.g. .mt-2, .px-4, .gap-3.
+$_spacing-utilities: (
+  'm': (margin),
+  'mt': (margin-top),
+  'mr': (margin-right),
+  'mb': (margin-bottom),
+  'ml': (margin-left),
+  'mx': (
+    margin-left,
+    margin-right,
+  ),
+  'my': (
+    margin-top,
+    margin-bottom,
+  ),
+  'p': (padding),
+  'pt': (padding-top),
+  'pr': (padding-right),
+  'pb': (padding-bottom),
+  'pl': (padding-left),
+  'px': (
+    padding-left,
+    padding-right,
+  ),
+  'py': (
+    padding-top,
+    padding-bottom,
+  ),
+  'gap': (gap),
+  'gap-x': (column-gap),
+  'gap-y': (row-gap),
+);
+
+@each $class-prefix, $properties in $_spacing-utilities {
+  @include token-classes($class-prefix, $properties, $spacing, 'space');
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ml-auto {
+  margin-left: auto;
+}

@@ -1,0 +1,4 @@
+// Sass-only helpers (no CSS output). Component styles can pull these in with
+// `@use 'abstracts' as *;` (resolved via stylePreprocessorOptions.includePaths).
+@forward 'tokens';
+@forward 'mixins';

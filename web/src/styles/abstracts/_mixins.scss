@@ -1,0 +1,47 @@
+@use 'sass:map';
+
+/// Emits `--{prefix}-{key}: value` for every entry in a token map.
+@mixin custom-properties($prefix, $tokens) {
+  @each $key, $value in $tokens {
+    --#{$prefix}-#{$key}: #{$value};
+  }
+}
+
+/// Emits one class per token, e.g. `.p-4 { padding: var(--space-4) }`.
+@mixin token-classes($class-prefix, $properties, $tokens, $var-prefix) {
+  @each $key, $_ in $tokens {
+    .#{$class-prefix}-#{$key} {
+      @each $property in $properties {
+        #{$property}: var(--#{$var-prefix}-#{$key});
+      }
+    }
+  }
+}
+
+/// Clips text to one line with an ellipsis.
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/// Lays children out in a row with space between them, vertically centred.
+@mixin row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/// Lays children out in a column separated by a spacing token.
+@mixin stack($gap: 4) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-#{$gap});
+}
+
+/// Removes the default list bullets and spacing.
+@mixin list-reset {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

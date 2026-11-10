@@ -1,0 +1,100 @@
+@use '../abstracts' as *;
+
+.d-block {
+  display: block;
+}
+
+.d-inline-flex {
+  display: inline-flex;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.d-grid {
+  display: grid;
+}
+
+.d-none {
+  display: none;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.shrink-0 {
+  flex-shrink: 0;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.row-between {
+  @include row-between;
+}
+
+// Vertical stack with a spacing-token gap, e.g. .stack-4.
+@each $key, $_ in $spacing {
+  .stack-#{$key} {
+    @include stack($key);
+  }
+}
+
+.w-full {
+  width: 100%;
+}
+
+.max-w-content {
+  max-width: var(--content-max-width);
+}
+
+.max-w-form {
+  max-width: var(--form-max-width);
+}
+
+.max-w-prose {
+  max-width: var(--prose-max-width);
+}
+
+.list-reset {
+  @include list-reset;
+}
