@@ -1,0 +1,29 @@
+<section class="card">
+  <h2>Authentication</h2>
+  <p class="muted">
+    Send the application's API key in the <code>X-Api-Key</code> header. Only published notes are
+    returned.
+  </p>
+</section>
+
+<section class="card">
+  <h2>Endpoints</h2>
+  <dl>
+    @for (endpoint of endpoints; track endpoint.path) {
+      <dt>
+        <code>{{ endpoint.path }}</code>
+      </dt>
+      <dd>{{ endpoint.description }}</dd>
+    }
+  </dl>
+</section>
+
+@for (snippet of snippets(); track snippet.title) {
+  <section class="card">
+    <div class="snippet-header">
+      <h2>{{ snippet.title }}</h2>
+      <app-copy-button [text]="snippet.code" />
+    </div>
+    <pre><code>{{ snippet.code }}</code></pre>
+  </section>
+}

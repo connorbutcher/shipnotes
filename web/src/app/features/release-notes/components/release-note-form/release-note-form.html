@@ -1,0 +1,49 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="row">
+    <label class="field version">
+      <span>Version</span>
+      <input
+        type="text"
+        formControlName="version"
+        placeholder="1.4.0"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      @if (form.controls.version.touched && form.controls.version.hasError('required')) {
+        <small class="error">Version is required.</small>
+      } @else if (form.controls.version.touched && form.controls.version.hasError('semver')) {
+        <small class="error">Use semantic versioning, e.g. 1.4.0 or 2.0.0-beta.1.</small>
+      } @else if (preRelease()) {
+        <small><app-status-badge tone="warning">Pre-release</app-status-badge></small>
+      }
+    </label>
+
+    <label class="field title">
+      <span>Title</span>
+      <input
+        type="text"
+        formControlName="title"
+        [maxlength]="titleMaxLength"
+        placeholder="Faster search and dark mode"
+      />
+      @if (form.controls.title.touched && form.controls.title.hasError('required')) {
+        <small class="error">Title is required.</small>
+      }
+    </label>
+  </div>
+
+  <div class="field">
+    <span>Notes</span>
+    <app-rich-text-editor [control]="form.controls.contentHtml" />
+  </div>
+
+  <div class="footer">
+    <label class="toggle">
+      <input type="checkbox" formControlName="isPublished" />
+      <span>Published (visible to consuming apps)</span>
+    </label>
+    <button type="submit" class="button" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : 'Save release notes' }}
+    </button>
+  </div>
+</form>

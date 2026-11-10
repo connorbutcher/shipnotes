@@ -1,0 +1,76 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
+import { isPreRelease, semverValidator } from '../../../../shared/validators/semver.validator';
+import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
+import { normalizeEditorHtml } from '../../../../shared/utils/editor-html';
+import { RichTextEditor } from '../rich-text-editor/rich-text-editor';
+
+const TITLE_MAX_LENGTH = 200;
+
+@Component({
+  selector: 'app-release-note-form',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, RichTextEditor, StatusBadge],
+  templateUrl: './release-note-form.html',
+  styleUrl: './release-note-form.scss',
+})
+export class ReleaseNoteForm {
+  private readonly fb = inject(NonNullableFormBuilder);
+
+  readonly releaseNote = input<ReleaseNote | null>(null);
+  readonly saving = input(false);
+  readonly saved = output<SaveReleaseNoteRequest>();
+
+  protected readonly titleMaxLength = TITLE_MAX_LENGTH;
+
+  protected readonly form = this.fb.group({
+    version: ['', [Validators.required, semverValidator]],
+    title: ['', [Validators.required, Validators.maxLength(TITLE_MAX_LENGTH)]],
+    contentHtml: [''],
+    isPublished: [false],
+  });
+
+  private readonly version = toSignal(this.form.controls.version.valueChanges, {
+    initialValue: '',
+  });
+  protected readonly preRelease = computed(() => isPreRelease(this.version()));
+
+  constructor() {
+    effect(() => {
+      const note = this.releaseNote();
+      if (note) {
+        this.form.reset({
+          version: note.version,
+          title: note.title,
+          contentHtml: note.contentHtml,
+          isPublished: note.isPublished,
+        });
+      }
+    });
+  }
+
+  protected submit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const value = this.form.getRawValue();
+    this.saved.emit({
+      ...value,
+      version: value.version.trim(),
+      title: value.title.trim(),
+      contentHtml: normalizeEditorHtml(value.contentHtml),
+    });
+  }
+}

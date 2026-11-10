@@ -1,0 +1,39 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+dl {
+  margin: 0;
+}
+
+dt {
+  margin-top: 0.75rem;
+}
+
+dd {
+  margin: 0.25rem 0 0;
+  color: var(--color-muted);
+}
+
+.snippet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+pre {
+  margin: 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--color-code-bg);
+  color: var(--color-code-text);
+  overflow-x: auto;
+  font-size: 0.85rem;
+}

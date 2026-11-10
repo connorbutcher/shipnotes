@@ -1,0 +1,14 @@
+# Local SQL Server for development: docker compose up -d
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "ShipNotes_Dev_123!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - shipnotes-sql:/var/opt/mssql
+
+volumes:
+  shipnotes-sql:

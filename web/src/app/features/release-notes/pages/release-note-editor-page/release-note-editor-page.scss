@@ -1,0 +1,18 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back {
+  color: var(--color-muted);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+h2 {
+  font-size: 1.1rem;
+}

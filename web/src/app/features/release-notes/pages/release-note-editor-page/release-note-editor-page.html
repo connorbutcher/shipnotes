@@ -1,0 +1,24 @@
+<div class="toolbar">
+  <a class="back" routerLink="..">← All release notes</a>
+  @if (!isNew()) {
+    <button type="button" class="button danger small" [disabled]="saving()" (click)="delete()">
+      Delete
+    </button>
+  }
+</div>
+
+<h2>{{ isNew() ? 'New release notes' : 'Edit release notes' }}</h2>
+
+@if (note.isLoading()) {
+  <p class="muted">Loading…</p>
+} @else if (note.error()) {
+  <p class="muted">These release notes could not be loaded.</p>
+} @else {
+  <section class="card">
+    <app-release-note-form
+      [releaseNote]="note.value() ?? null"
+      [saving]="saving()"
+      (saved)="save($event)"
+    />
+  </section>
+}

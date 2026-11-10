@@ -1,0 +1,70 @@
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Observable, finalize, of } from 'rxjs';
+import { ReleaseNotesApi } from '../../../../core/api/release-notes-api';
+import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
+import { NotificationService } from '../../../../core/notifications/notification.service';
+import { ConfirmService } from '../../../../shared/services/confirm.service';
+import { ReleaseNoteForm } from '../../components/release-note-form/release-note-form';
+
+/** Creates a release note, or edits one when a release note id is in the route. */
+@Component({
+  selector: 'app-release-note-editor-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink, ReleaseNoteForm],
+  templateUrl: './release-note-editor-page.html',
+  styleUrl: './release-note-editor-page.scss',
+})
+export class ReleaseNoteEditorPage {
+  private readonly api = inject(ReleaseNotesApi);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly notifications = inject(NotificationService);
+  private readonly confirmation = inject(ConfirmService);
+
+  readonly applicationId = input.required<string>();
+  readonly releaseNoteId = input<string>();
+
+  protected readonly isNew = computed(() => !this.releaseNoteId());
+  protected readonly saving = signal(false);
+
+  protected readonly note = rxResource<
+    ReleaseNote | null,
+    { applicationId: string; id: string | undefined }
+  >({
+    params: () => ({ applicationId: this.applicationId(), id: this.releaseNoteId() }),
+    stream: ({ params }) => (params.id ? this.api.get(params.applicationId, params.id) : of(null)),
+  });
+
+  protected save(request: SaveReleaseNoteRequest): void {
+    const id = this.releaseNoteId();
+    const operation = id
+      ? this.api.update(this.applicationId(), id, request)
+      : this.api.create(this.applicationId(), request);
+
+    this.run(operation, (saved) => {
+      this.notifications.success(`Release notes for ${saved.version} saved.`);
+      this.backToList();
+    });
+  }
+
+  protected delete(): void {
+    const id = this.releaseNoteId();
+    if (id && this.confirmation.confirm('Delete these release notes? This cannot be undone.')) {
+      this.run(this.api.delete(this.applicationId(), id), () => {
+        this.notifications.success('Release notes deleted.');
+        this.backToList();
+      });
+    }
+  }
+
+  private run<T>(operation: Observable<T>, onSuccess: (value: T) => void): void {
+    this.saving.set(true);
+    operation.pipe(finalize(() => this.saving.set(false))).subscribe(onSuccess);
+  }
+
+  private backToList(): void {
+    this.router.navigate(['..'], { relativeTo: this.route });
+  }
+}

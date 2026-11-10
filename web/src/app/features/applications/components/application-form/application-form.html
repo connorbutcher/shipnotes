@@ -1,0 +1,31 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="preview">
+    <app-icon
+      [name]="preview().name || '?'"
+      [iconUrl]="form.controls.iconUrl.valid ? preview().iconUrl || null : null"
+      [size]="56"
+    />
+  </div>
+
+  <label class="field">
+    <span>Name</span>
+    <input type="text" formControlName="name" [maxlength]="nameMaxLength" autocomplete="off" />
+    @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+      <small class="error">Name is required.</small>
+    }
+  </label>
+
+  <label class="field">
+    <span>Icon URL <em>(optional)</em></span>
+    <input type="url" formControlName="iconUrl" placeholder="https://example.com/icon.png" />
+    @if (form.controls.iconUrl.touched && form.controls.iconUrl.hasError('pattern')) {
+      <small class="error">Enter a full http or https URL.</small>
+    }
+  </label>
+
+  <div class="actions">
+    <button type="submit" class="button" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : submitLabel() }}
+    </button>
+  </div>
+</form>
