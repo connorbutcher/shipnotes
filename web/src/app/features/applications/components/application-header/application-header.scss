@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+h1 {
+  margin: 0 0 0.25rem;
+}
+
+:host ::ng-deep .p-tag-label {
+  font-family: var(--font-mono);
+}

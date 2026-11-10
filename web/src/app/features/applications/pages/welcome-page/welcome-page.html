@@ -1,0 +1,18 @@
+@if (store.isEmpty()) {
+  <app-empty-state
+    icon="pi-send"
+    heading="Welcome to ShipNotes"
+    message="Create an application to start writing release notes your apps can fetch with an API key."
+  >
+    <a pButton routerLink="/applications/new">
+      <i class="pi pi-plus" pButtonIcon></i>
+      <span pButtonLabel>Create your first application</span>
+    </a>
+  </app-empty-state>
+} @else {
+  <app-empty-state
+    icon="pi-arrow-left"
+    heading="Select an application"
+    message="Pick an application from the side panel to manage its release notes."
+  />
+}

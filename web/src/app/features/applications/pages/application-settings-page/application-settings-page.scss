@@ -4,11 +4,10 @@
   gap: 1.5rem;
 }
 
-h2 {
+p {
   margin-top: 0;
-  font-size: 1.1rem;
 }
 
-.danger {
-  border-color: var(--color-danger-border);
+:host ::ng-deep .danger-zone {
+  border: 1px solid var(--p-red-200);
 }

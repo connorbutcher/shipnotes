@@ -1,14 +1,16 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { Button } from 'primeng/button';
 
 const RESET_MS = 2000;
 
+/** Copies text to the clipboard and briefly confirms it. */
 @Component({
   selector: 'app-copy-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<button type="button" class="button secondary small" (click)="copy()">
-    {{ copied() ? 'Copied' : label() }}
-  </button>`,
+  imports: [Button],
+  templateUrl: './copy-button.html',
+  styleUrl: './copy-button.scss',
 })
 export class CopyButton {
   private readonly clipboard = inject(Clipboard);

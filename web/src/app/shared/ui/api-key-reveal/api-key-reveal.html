@@ -1,0 +1,13 @@
+<p-message severity="warn" icon="pi pi-key" role="status">
+  <div class="content">
+    <div class="text">
+      <strong>Copy your API key now.</strong>
+      <span>For security it is stored hashed and won't be shown again.</span>
+    </div>
+    <code>{{ apiKey() }}</code>
+    <div class="actions">
+      <app-copy-button [text]="apiKey()" />
+      <p-button label="Done" size="small" [text]="true" (onClick)="dismissed.emit()" />
+    </div>
+  </div>
+</p-message>

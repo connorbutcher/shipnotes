@@ -1,0 +1,30 @@
+.row {
+  cursor: pointer;
+}
+
+.version-column {
+  width: 9rem;
+}
+
+.version {
+  font-family: var(--font-mono);
+  font-weight: 600;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+.title {
+  max-width: 24rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tags {
+  display: flex;
+  gap: 0.4rem;
+  white-space: nowrap;
+}

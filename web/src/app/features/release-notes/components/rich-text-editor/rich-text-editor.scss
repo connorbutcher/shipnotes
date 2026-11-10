@@ -2,19 +2,7 @@
   display: block;
 }
 
-:host ::ng-deep .ql-toolbar {
-  border-radius: var(--radius) var(--radius) 0 0;
-  border-color: var(--color-border);
-}
-
-:host ::ng-deep .ql-container {
-  border-radius: 0 0 var(--radius) var(--radius);
-  border-color: var(--color-border);
+:host ::ng-deep .p-editor-content {
   font-family: inherit;
   font-size: 0.95rem;
-}
-
-quill-editor {
-  display: block;
-  width: 100%;
 }

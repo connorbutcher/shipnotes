@@ -1,0 +1,28 @@
+<div class="toolbar">
+  <h2>Release notes</h2>
+  <a pButton routerLink="new">
+    <i class="pi pi-plus" pButtonIcon></i>
+    <span pButtonLabel>New release notes</span>
+  </a>
+</div>
+
+@if (notes.isLoading()) {
+  <app-loading-state label="Loading release notes…" />
+} @else if (notes.hasValue()) {
+  @if (notes.value().length) {
+    <p-card>
+      <app-release-notes-table [notes]="notes.value()" />
+    </p-card>
+  } @else {
+    <app-empty-state
+      icon="pi-file-edit"
+      heading="No release notes yet"
+      message="Write notes for your first version to make them available to your app."
+    >
+      <a pButton routerLink="new">
+        <i class="pi pi-pencil" pButtonIcon></i>
+        <span pButtonLabel>Write release notes</span>
+      </a>
+    </app-empty-state>
+  }
+}

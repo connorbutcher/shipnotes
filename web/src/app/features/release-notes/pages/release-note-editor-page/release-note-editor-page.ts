@@ -1,18 +1,31 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
+import { Card } from 'primeng/card';
+import { Message } from 'primeng/message';
 import { Observable, finalize, of } from 'rxjs';
 import { ReleaseNotesApi } from '../../../../core/api/release-notes-api';
 import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
 import { NotificationService } from '../../../../core/notifications/notification.service';
 import { ConfirmService } from '../../../../shared/services/confirm.service';
+import { LoadingState } from '../../../../shared/ui/loading-state/loading-state';
 import { ReleaseNoteForm } from '../../components/release-note-form/release-note-form';
 
 /** Creates a release note, or edits one when a release note id is in the route. */
 @Component({
   selector: 'app-release-note-editor-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReleaseNoteForm],
+  imports: [
+    RouterLink,
+    ButtonDirective,
+    ButtonIcon,
+    ButtonLabel,
+    Card,
+    Message,
+    LoadingState,
+    ReleaseNoteForm,
+  ],
   templateUrl: './release-note-editor-page.html',
   styleUrl: './release-note-editor-page.scss',
 })
@@ -49,9 +62,19 @@ export class ReleaseNoteEditorPage {
     });
   }
 
-  protected delete(): void {
+  protected async delete(): Promise<void> {
     const id = this.releaseNoteId();
-    if (id && this.confirmation.confirm('Delete these release notes? This cannot be undone.')) {
+    if (!id) {
+      return;
+    }
+
+    const confirmed = await this.confirmation.confirm({
+      header: 'Delete release notes',
+      message: 'Delete these release notes? This cannot be undone.',
+      acceptLabel: 'Delete',
+      danger: true,
+    });
+    if (confirmed) {
       this.run(this.api.delete(this.applicationId(), id), () => {
         this.notifications.success('Release notes deleted.');
         this.backToList();

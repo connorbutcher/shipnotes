@@ -7,25 +7,47 @@
     />
   </div>
 
-  <label class="field">
-    <span>Name</span>
-    <input type="text" formControlName="name" [maxlength]="nameMaxLength" autocomplete="off" />
+  <div class="field">
+    <label for="application-name">Name</label>
+    <input
+      pInputText
+      id="application-name"
+      type="text"
+      formControlName="name"
+      [maxlength]="nameMaxLength"
+      autocomplete="off"
+      [invalid]="form.controls.name.touched && form.controls.name.invalid"
+    />
     @if (form.controls.name.touched && form.controls.name.hasError('required')) {
-      <small class="error">Name is required.</small>
+      <p-message severity="error" variant="simple" size="small">Name is required.</p-message>
     }
-  </label>
+  </div>
 
-  <label class="field">
-    <span>Icon URL <em>(optional)</em></span>
-    <input type="url" formControlName="iconUrl" placeholder="https://example.com/icon.png" />
+  <div class="field">
+    <label for="application-icon-url">Icon URL <em>(optional)</em></label>
+    <p-iconfield>
+      <p-inputicon class="pi pi-image" />
+      <input
+        pInputText
+        id="application-icon-url"
+        type="url"
+        formControlName="iconUrl"
+        placeholder="https://example.com/icon.png"
+        [fluid]="true"
+        [invalid]="form.controls.iconUrl.touched && form.controls.iconUrl.invalid"
+      />
+    </p-iconfield>
     @if (form.controls.iconUrl.touched && form.controls.iconUrl.hasError('pattern')) {
-      <small class="error">Enter a full http or https URL.</small>
+      <p-message severity="error" variant="simple" size="small">
+        Enter a full http or https URL.
+      </p-message>
     }
-  </label>
+  </div>
 
   <div class="actions">
-    <button type="submit" class="button" [disabled]="saving()">
-      {{ saving() ? 'Saving…' : submitLabel() }}
+    <button pButton type="submit" [loading]="saving()">
+      <i class="pi pi-check" pButtonIcon></i>
+      <span pButtonLabel>{{ saving() ? 'Saving…' : submitLabel() }}</span>
     </button>
   </div>
 </form>

@@ -2,17 +2,14 @@ a {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.45rem 0.5rem;
-  border-radius: 8px;
-  color: var(--color-text);
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--p-border-radius-md);
+  color: var(--p-text-color);
   text-decoration: none;
 
-  &:hover {
-    background: var(--color-hover);
-  }
-
   &.active {
-    background: var(--color-accent-soft);
+    background: var(--p-highlight-background);
+    color: var(--p-highlight-color);
     font-weight: 600;
   }
 }

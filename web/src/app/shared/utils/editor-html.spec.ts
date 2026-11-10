@@ -8,4 +8,8 @@ describe('normalizeEditorHtml', () => {
   it('treats an empty paragraph as empty content', () => {
     expect(normalizeEditorHtml('<p><br></p>')).toBe('');
   });
+
+  it('treats a null value from a cleared editor as empty content', () => {
+    expect(normalizeEditorHtml(null)).toBe('');
+  });
 });

@@ -1,0 +1,35 @@
+<p-editor
+  [formControl]="control()"
+  [formats]="formats"
+  [placeholder]="placeholder()"
+  [style]="{ minHeight: '18rem' }"
+>
+  <ng-template #header>
+    <span class="ql-formats">
+      <select class="ql-header" aria-label="Text style">
+        <option value="2">Heading</option>
+        <option value="3">Subheading</option>
+        <option selected>Normal</option>
+      </select>
+    </span>
+    <span class="ql-formats">
+      <button type="button" class="ql-bold" aria-label="Bold"></button>
+      <button type="button" class="ql-italic" aria-label="Italic"></button>
+      <button type="button" class="ql-underline" aria-label="Underline"></button>
+      <button type="button" class="ql-strike" aria-label="Strikethrough"></button>
+    </span>
+    <span class="ql-formats">
+      <button type="button" class="ql-list" value="ordered" aria-label="Numbered list"></button>
+      <button type="button" class="ql-list" value="bullet" aria-label="Bulleted list"></button>
+    </span>
+    <span class="ql-formats">
+      <button type="button" class="ql-blockquote" aria-label="Quote"></button>
+      <button type="button" class="ql-code-block" aria-label="Code block"></button>
+      <button type="button" class="ql-link" aria-label="Insert link"></button>
+      <button type="button" class="ql-image" aria-label="Insert image"></button>
+    </span>
+    <span class="ql-formats">
+      <button type="button" class="ql-clean" aria-label="Clear formatting"></button>
+    </span>
+  </ng-template>
+</p-editor>

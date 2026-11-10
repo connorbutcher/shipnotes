@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { Card } from 'primeng/card';
 import { finalize } from 'rxjs';
 import { SaveApplicationRequest } from '../../../../core/models/application.model';
 import { ApplicationsStore } from '../../../../core/state/applications-store';
@@ -8,18 +9,9 @@ import { ApplicationForm } from '../../components/application-form/application-f
 @Component({
   selector: 'app-new-application-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ApplicationForm],
-  template: `
-    <h1>New application</h1>
-    <p class="muted">
-      An API key is generated automatically. You'll see it once after creating the application.
-    </p>
-    <app-application-form
-      submitLabel="Create application"
-      [saving]="saving()"
-      (saved)="create($event)"
-    />
-  `,
+  imports: [Card, ApplicationForm],
+  templateUrl: './new-application-page.html',
+  styleUrl: './new-application-page.scss',
 })
 export class NewApplicationPage {
   private readonly store = inject(ApplicationsStore);
