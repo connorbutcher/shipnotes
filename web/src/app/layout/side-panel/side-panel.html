@@ -1,0 +1,33 @@
+<a class="brand" routerLink="/"><i class="pi pi-send" aria-hidden="true"></i> ShipNotes</a>
+
+<div class="section-header">
+  <span>Applications</span>
+  <a
+    pButton
+    routerLink="/applications/new"
+    size="small"
+    [text]="true"
+    [rounded]="true"
+    aria-label="Add application"
+    pTooltip="Add application"
+    tooltipPosition="right"
+  >
+    <i class="pi pi-plus" pButtonIcon></i>
+  </a>
+</div>
+
+@if (store.loading() && store.applications().length === 0) {
+  <div class="hint" aria-label="Loading applications">
+    @for (row of skeletonRows; track row) {
+      <p-skeleton height="2rem" />
+    }
+  </div>
+} @else if (items().length) {
+  <p-menu [model]="items()" styleClass="app-menu" ariaLabel="Applications">
+    <ng-template #item let-item>
+      <app-application-nav-item [application]="item.state.application" />
+    </ng-template>
+  </p-menu>
+} @else {
+  <p class="hint">No applications yet.</p>
+}

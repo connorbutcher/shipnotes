@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
+import { Card } from 'primeng/card';
 import { Observable, finalize } from 'rxjs';
 import { SaveApplicationRequest } from '../../../../core/models/application.model';
 import { NotificationService } from '../../../../core/notifications/notification.service';
@@ -10,7 +12,7 @@ import { ApplicationForm } from '../../components/application-form/application-f
 @Component({
   selector: 'app-application-settings-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ApplicationForm],
+  imports: [ButtonDirective, ButtonIcon, ButtonLabel, Card, ApplicationForm],
   templateUrl: './application-settings-page.html',
   styleUrl: './application-settings-page.scss',
 })
@@ -31,25 +33,29 @@ export class ApplicationSettingsPage {
     );
   }
 
-  protected regenerateKey(): void {
-    if (
-      this.confirmation.confirm(
-        'Regenerate the API key? Apps using the current key will stop working immediately.',
-      )
-    ) {
+  protected async regenerateKey(): Promise<void> {
+    const confirmed = await this.confirmation.confirm({
+      header: 'Regenerate API key',
+      message: 'Apps using the current key will stop working immediately.',
+      acceptLabel: 'Regenerate',
+      danger: true,
+    });
+    if (confirmed) {
       this.run(this.store.regenerateApiKey(this.applicationId()), () =>
         this.notifications.success('New API key issued.'),
       );
     }
   }
 
-  protected delete(): void {
+  protected async delete(): Promise<void> {
     const name = this.application()?.name ?? 'this application';
-    if (
-      this.confirmation.confirm(
-        `Delete ${name} and all of its release notes? This cannot be undone.`,
-      )
-    ) {
+    const confirmed = await this.confirmation.confirm({
+      header: 'Delete application',
+      message: `Delete ${name} and all of its release notes? This cannot be undone.`,
+      acceptLabel: 'Delete',
+      danger: true,
+    });
+    if (confirmed) {
       this.run(this.store.delete(this.applicationId()), () => {
         this.notifications.success(`${name} deleted.`);
         this.router.navigate(['/']);

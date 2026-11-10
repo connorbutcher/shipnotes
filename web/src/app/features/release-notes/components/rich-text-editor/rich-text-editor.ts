@@ -7,16 +7,7 @@ import { QuillEditorComponent, QuillModules } from 'ngx-quill';
   selector: 'app-rich-text-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, QuillEditorComponent],
-  template: `
-    <quill-editor
-      [formControl]="control()"
-      [modules]="modules"
-      [placeholder]="placeholder()"
-      format="html"
-      theme="snow"
-      [styles]="{ minHeight: '18rem' }"
-    />
-  `,
+  templateUrl: './rich-text-editor.html',
   styleUrl: './rich-text-editor.scss',
 })
 export class RichTextEditor {

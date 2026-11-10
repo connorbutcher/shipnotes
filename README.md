@@ -12,7 +12,7 @@ ShipNotes lets you write release notes for your applications and serve them to t
 | --- | --- | --- |
 | Database | SQL Server, schema managed by EF Core migrations | `api/src/ShipNotes.Infrastructure/Persistence/Migrations`, `database/shipnotes.sql` |
 | API | .NET 10 ASP.NET Core Web API | `api/` |
-| UI | Angular 22 (standalone components, signals, ngx-quill) | `web/` |
+| UI | Angular 22 (standalone components, signals), PrimeNG 22 with the Aura theme, ngx-quill | `web/` |
 
 ## Running locally
 
@@ -78,10 +78,12 @@ curl -H "X-Api-Key: $SHIPNOTES_API_KEY" \
 
 **UI** (`web/src/app`):
 
-- `core/`: models, API clients, the signal-based `ApplicationsStore`, notifications, and the HTTP error interceptor.
-- `layout/`: the shell, side panel, and application nav item.
-- `shared/`: reusable UI pieces (icon, badges, copy button, API key banner, toasts), the semver validator, and utilities.
+- `core/`: models, API clients, the signal-based `ApplicationsStore`, notifications (PrimeNG toast), the HTTP error interceptor, and the PrimeNG theme (`core/theme`: Aura with an indigo primary palette).
+- `layout/`: the shell, the side panel (PrimeNG menu), and the application nav item.
+- `shared/`: reusable UI pieces built on PrimeNG (avatar icon, copy button, API key banner, empty and loading states), the confirm dialog service, the semver validator, and utilities.
 - `features/applications` and `features/release-notes`: lazy-loaded routes, with pages that load data and handle navigation, and presentational components for forms and list items.
+
+**PrimeNG licence.** From version 22, PrimeNG needs a licence key; without one it shows an "Invalid PrimeUI License" notice in the corner of the page. Individuals and small teams qualify for the free Community licence at https://primeui.dev/licenses. Put the key in `primeNgLicenseKey` in `web/src/environments/environment*.ts`.
 
 **Admin endpoints** (`/api/v1/applications/...`) don't require sign-in yet. Put them behind your identity provider (for example, Entra ID or Auth0 with JWT bearer) before you deploy anywhere public.
 

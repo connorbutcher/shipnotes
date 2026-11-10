@@ -1,0 +1,12 @@
+<a
+  pRipple
+  class="p-menu-item-link"
+  data-pc-section="itemlink"
+  [routerLink]="['/applications', application().id]"
+  routerLinkActive="active"
+  ariaCurrentWhenActive="page"
+  tabindex="-1"
+>
+  <app-icon [name]="application().name" [iconUrl]="application().iconUrl" [size]="28" />
+  <span class="name">{{ application().name }}</span>
+</a>

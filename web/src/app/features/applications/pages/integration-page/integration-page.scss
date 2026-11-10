@@ -4,34 +4,24 @@
   gap: 1.5rem;
 }
 
-h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.1rem;
-}
-
-dl {
+p {
   margin: 0;
 }
 
-dt {
-  margin-top: 0.75rem;
+.endpoint {
+  white-space: nowrap;
 }
 
-dd {
-  margin: 0.25rem 0 0;
-  color: var(--color-muted);
-}
-
-.snippet-header {
+.snippet-actions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
 }
 
 pre {
   margin: 0;
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: var(--p-border-radius-md);
   background: var(--color-code-bg);
   color: var(--color-code-text);
   overflow-x: auto;

@@ -1,49 +1,58 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <div class="row">
-    <label class="field version">
-      <span>Version</span>
+    <div class="field">
+      <label for="note-version">Version</label>
       <input
+        pInputText
+        id="note-version"
         type="text"
         formControlName="version"
         placeholder="1.4.0"
         autocomplete="off"
         spellcheck="false"
+        [invalid]="form.controls.version.touched && form.controls.version.invalid"
       />
       @if (form.controls.version.touched && form.controls.version.hasError('required')) {
-        <small class="error">Version is required.</small>
+        <p-message severity="error" variant="simple" size="small">Version is required.</p-message>
       } @else if (form.controls.version.touched && form.controls.version.hasError('semver')) {
-        <small class="error">Use semantic versioning, e.g. 1.4.0 or 2.0.0-beta.1.</small>
+        <p-message severity="error" variant="simple" size="small">
+          Use semantic versioning, e.g. 1.4.0 or 2.0.0-beta.1.
+        </p-message>
       } @else if (preRelease()) {
-        <small><app-status-badge tone="warning">Pre-release</app-status-badge></small>
+        <span><p-tag severity="warn" value="Pre-release" /></span>
       }
-    </label>
+    </div>
 
-    <label class="field title">
-      <span>Title</span>
+    <div class="field">
+      <label for="note-title">Title</label>
       <input
+        pInputText
+        id="note-title"
         type="text"
         formControlName="title"
         [maxlength]="titleMaxLength"
         placeholder="Faster search and dark mode"
+        [invalid]="form.controls.title.touched && form.controls.title.invalid"
       />
       @if (form.controls.title.touched && form.controls.title.hasError('required')) {
-        <small class="error">Title is required.</small>
+        <p-message severity="error" variant="simple" size="small">Title is required.</p-message>
       }
-    </label>
+    </div>
   </div>
 
-  <div class="field">
-    <span>Notes</span>
+  <div class="field" role="group" aria-labelledby="note-content-label">
+    <span id="note-content-label" class="label">Notes</span>
     <app-rich-text-editor [control]="form.controls.contentHtml" />
   </div>
 
   <div class="footer">
-    <label class="toggle">
-      <input type="checkbox" formControlName="isPublished" />
-      <span>Published (visible to consuming apps)</span>
-    </label>
-    <button type="submit" class="button" [disabled]="saving()">
-      {{ saving() ? 'Saving…' : 'Save release notes' }}
+    <div class="toggle">
+      <p-toggleswitch inputId="note-published" formControlName="isPublished" />
+      <label for="note-published">Published (visible to consuming apps)</label>
+    </div>
+    <button pButton type="submit" [loading]="saving()">
+      <i class="pi pi-save" pButtonIcon></i>
+      <span pButtonLabel>{{ saving() ? 'Saving…' : 'Save release notes' }}</span>
     </button>
   </div>
 </form>

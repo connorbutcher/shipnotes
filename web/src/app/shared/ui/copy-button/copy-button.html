@@ -1,0 +1,8 @@
+<p-button
+  [label]="copied() ? 'Copied' : label()"
+  [icon]="copied() ? 'pi pi-check' : 'pi pi-copy'"
+  [severity]="copied() ? 'success' : 'secondary'"
+  size="small"
+  [outlined]="true"
+  (onClick)="copy()"
+/>

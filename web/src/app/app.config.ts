@@ -2,8 +2,10 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
 import { provideQuillConfig } from 'ngx-quill/config';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { routes } from './app.routes';
 import { errorNotificationInterceptor } from './core/http/error-notification.interceptor';
+import { provideShipNotesPrimeNG } from './core/theme/primeng.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,5 +18,8 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withFetch(), withInterceptors([errorNotificationInterceptor])),
     provideQuillConfig({ sanitize: true }),
+    provideShipNotesPrimeNG(),
+    MessageService,
+    ConfirmationService,
   ],
 };

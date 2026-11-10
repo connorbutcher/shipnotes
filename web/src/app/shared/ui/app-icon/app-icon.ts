@@ -1,17 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, input, linkedSignal } from '@angular/core';
+import { Avatar } from 'primeng/avatar';
 
 /** An application's icon, falling back to its initials when no icon URL is set or it fails to load. */
 @Component({
   selector: 'app-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[style.--icon-size.px]': 'size()' },
-  template: `
-    @if (iconUrl() && !failed()) {
-      <img [src]="iconUrl()" [alt]="''" (error)="failed.set(true)" />
-    } @else {
-      <span class="initials" aria-hidden="true">{{ initials() }}</span>
-    }
-  `,
+  imports: [Avatar],
+  templateUrl: './app-icon.html',
   styleUrl: './app-icon.scss',
 })
 export class AppIcon {
@@ -20,6 +15,13 @@ export class AppIcon {
   readonly size = input(32);
 
   protected readonly failed = linkedSignal({ source: this.iconUrl, computation: () => false });
+  protected readonly showImage = computed(() => !!this.iconUrl() && !this.failed());
+
+  protected readonly avatarStyle = computed(() => ({
+    width: `${this.size()}px`,
+    height: `${this.size()}px`,
+    fontSize: `${this.size() * 0.4}px`,
+  }));
 
   protected readonly initials = computed(() =>
     this.name()

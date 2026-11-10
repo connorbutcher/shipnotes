@@ -1,8 +1,20 @@
 <div class="toolbar">
-  <a class="back" routerLink="..">← All release notes</a>
+  <a pButton routerLink=".." [text]="true" severity="secondary">
+    <i class="pi pi-arrow-left" pButtonIcon></i>
+    <span pButtonLabel>All release notes</span>
+  </a>
   @if (!isNew()) {
-    <button type="button" class="button danger small" [disabled]="saving()" (click)="delete()">
-      Delete
+    <button
+      pButton
+      type="button"
+      severity="danger"
+      [outlined]="true"
+      size="small"
+      [disabled]="saving()"
+      (click)="delete()"
+    >
+      <i class="pi pi-trash" pButtonIcon></i>
+      <span pButtonLabel>Delete</span>
     </button>
   }
 </div>
@@ -10,15 +22,17 @@
 <h2>{{ isNew() ? 'New release notes' : 'Edit release notes' }}</h2>
 
 @if (note.isLoading()) {
-  <p class="muted">Loading…</p>
+  <app-loading-state label="Loading release notes…" />
 } @else if (note.error()) {
-  <p class="muted">These release notes could not be loaded.</p>
+  <p-message severity="error" icon="pi pi-times-circle">
+    These release notes could not be loaded.
+  </p-message>
 } @else {
-  <section class="card">
+  <p-card>
     <app-release-note-form
       [releaseNote]="note.value() ?? null"
       [saving]="saving()"
       (saved)="save($event)"
     />
-  </section>
+  </p-card>
 }

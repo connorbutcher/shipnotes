@@ -1,7 +1,15 @@
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Card } from 'primeng/card';
+import { TableModule } from 'primeng/table';
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { API_BASE_URL } from '../../../../core/api/api-config';
 import { CopyButton } from '../../../../shared/ui/copy-button/copy-button';
+
+interface Endpoint {
+  path: string;
+  description: string;
+}
 
 interface Snippet {
   title: string;
@@ -12,14 +20,14 @@ interface Snippet {
 @Component({
   selector: 'app-integration-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CopyButton],
+  imports: [Card, TableModule, Tabs, TabList, Tab, TabPanels, TabPanel, CopyButton],
   templateUrl: './integration-page.html',
   styleUrl: './integration-page.scss',
 })
 export class IntegrationPage {
   private readonly origin = inject(API_BASE_URL) || inject(DOCUMENT).location.origin;
 
-  protected readonly endpoints = [
+  protected readonly endpoints: Endpoint[] = [
     {
       path: 'GET /api/v1/public/release-notes',
       description:

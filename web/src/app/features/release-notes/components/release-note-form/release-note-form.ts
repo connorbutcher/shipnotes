@@ -9,9 +9,13 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
+import { Message } from 'primeng/message';
+import { Tag } from 'primeng/tag';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
 import { isPreRelease, semverValidator } from '../../../../shared/validators/semver.validator';
-import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
 import { normalizeEditorHtml } from '../../../../shared/utils/editor-html';
 import { RichTextEditor } from '../rich-text-editor/rich-text-editor';
 
@@ -20,7 +24,17 @@ const TITLE_MAX_LENGTH = 200;
 @Component({
   selector: 'app-release-note-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RichTextEditor, StatusBadge],
+  imports: [
+    ReactiveFormsModule,
+    ButtonDirective,
+    ButtonIcon,
+    ButtonLabel,
+    InputText,
+    Message,
+    Tag,
+    ToggleSwitch,
+    RichTextEditor,
+  ],
   templateUrl: './release-note-form.html',
   styleUrl: './release-note-form.scss',
 })
