@@ -50,7 +50,7 @@ export class ReleaseNoteForm {
   protected readonly form = this.fb.group({
     version: ['', [Validators.required, semverValidator]],
     title: ['', [Validators.required, Validators.maxLength(TITLE_MAX_LENGTH)]],
-    contentHtml: this.fb.control<string | null>(''),
+    contentHtml: [''],
     isPublished: [false],
   });
 

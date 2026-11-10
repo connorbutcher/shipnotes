@@ -2,8 +2,20 @@
   display: block;
 }
 
-:host ::ng-deep .p-editor-content {
+:host ::ng-deep .ql-toolbar {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-color: var(--color-border);
+}
+
+:host ::ng-deep .ql-container {
   min-height: var(--editor-min-height);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  border-color: var(--color-border);
   font-family: inherit;
   font-size: var(--font-size-base);
+}
+
+quill-editor {
+  display: block;
+  width: 100%;
 }
