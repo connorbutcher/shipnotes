@@ -3,6 +3,7 @@
 }
 
 :host ::ng-deep .p-editor-content {
+  min-height: var(--editor-min-height);
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: var(--font-size-base);
 }

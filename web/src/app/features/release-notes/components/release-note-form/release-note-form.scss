@@ -1,24 +1,24 @@
 form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--space-5);
 }
 
 .row {
   display: grid;
   grid-template-columns: 12rem 1fr;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .toggle {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--space-2-5);
 }

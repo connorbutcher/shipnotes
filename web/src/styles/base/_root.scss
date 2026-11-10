@@ -10,7 +10,6 @@
   @include custom-properties('radius', $radii);
   @include custom-properties('border-width', $border-widths);
   @include custom-properties('shadow', $shadows);
-  @include custom-properties('z', $z-indices);
   @include custom-properties('color', $colors);
 
   @each $key, $value in $layout {

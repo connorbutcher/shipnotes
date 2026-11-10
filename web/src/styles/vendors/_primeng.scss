@@ -1,0 +1,11 @@
+// Small global adjustments to PrimeNG components.
+
+// pButton on router links: keep button styling, not link styling.
+a.p-button {
+  text-decoration: none;
+}
+
+// Confirmation dialogs use a readable fixed width.
+.confirm-dialog {
+  width: var(--prose-max-width);
+}

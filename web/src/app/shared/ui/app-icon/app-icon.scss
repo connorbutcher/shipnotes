@@ -5,9 +5,9 @@
 
 :host ::ng-deep .p-avatar {
   overflow: hidden;
-  background: var(--p-primary-100);
-  color: var(--p-primary-700);
-  font-weight: 600;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font-weight: var(--font-weight-semibold);
 
   img {
     object-fit: cover;

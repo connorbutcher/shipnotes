@@ -1,58 +1,10 @@
-@use 'primeicons/primeicons.css';
-
-:root {
-  --side-panel-width: 260px;
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-
-  --color-bg: var(--p-surface-50);
-  --color-sidebar: var(--p-surface-100);
-  --color-code-bg: var(--p-surface-900);
-  --color-code-text: var(--p-surface-200);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  color: var(--p-text-color);
-  background: var(--color-bg);
-  line-height: 1.5;
-}
-
-h1 {
-  font-size: 1.6rem;
-}
-
-code {
-  font-family: var(--font-mono);
-}
-
-.muted {
-  color: var(--p-text-muted-color);
-}
-
-/* A labelled form control with optional hint and validation message. */
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-
-  > label,
-  > .label {
-    font-weight: 500;
-  }
-
-  em {
-    font-weight: 400;
-    color: var(--p-text-muted-color);
-  }
-}
-
-/* pButton on router links: keep button styling, not link styling. */
-a.p-button {
-  text-decoration: none;
-}
+// Global stylesheet entry point. Each area lives in its own folder under styles/:
+//   abstracts  - design tokens and Sass mixins (no CSS output)
+//   vendors    - third-party CSS and overrides for it
+//   base       - CSS custom properties, reset and element defaults
+//   components - app-wide component classes
+//   utilities  - single-purpose helper classes (loaded last so they win)
+@use 'styles/vendors';
+@use 'styles/base';
+@use 'styles/components';
+@use 'styles/utilities';

@@ -1,7 +1,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 p {
@@ -9,5 +9,5 @@ p {
 }
 
 :host ::ng-deep .danger-zone {
-  border: 1px solid var(--p-red-200);
+  border: var(--border-width-thin) solid var(--color-danger-border);
 }
