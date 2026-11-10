@@ -12,7 +12,7 @@ ShipNotes lets you write release notes for your applications and serve them to t
 | --- | --- | --- |
 | Database | SQL Server, schema managed by EF Core migrations | `api/src/ShipNotes.Infrastructure/Persistence/Migrations`, `database/shipnotes.sql` |
 | API | .NET 10 ASP.NET Core Web API | `api/` |
-| UI | Angular 22 (standalone components, signals), PrimeNG 22 with the Aura theme, PrimeNG Editor (Quill) | `web/` |
+| UI | Angular 22 (standalone components, signals), PrimeNG 22 with the Aura theme, ngx-quill | `web/` |
 
 ## Running locally
 

@@ -1,32 +1,26 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Editor } from 'primeng/editor';
+import { QuillEditorComponent, QuillModules } from 'ngx-quill';
 
-/** Quill formats the toolbar offers; anything else pasted in is dropped. */
-const FORMATS = [
-  'header',
-  'bold',
-  'italic',
-  'underline',
-  'strike',
-  'list',
-  'blockquote',
-  'code-block',
-  'link',
-  'image',
-];
-
-/** Rich text editor for release note content (PrimeNG Editor), producing semantic HTML. */
+/** Rich text editor for release note content, producing semantic HTML. */
 @Component({
   selector: 'app-rich-text-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, Editor],
+  imports: [ReactiveFormsModule, QuillEditorComponent],
   templateUrl: './rich-text-editor.html',
   styleUrl: './rich-text-editor.scss',
 })
 export class RichTextEditor {
-  readonly control = input.required<FormControl<string | null>>();
+  readonly control = input.required<FormControl<string>>();
   readonly placeholder = input('Describe what changed…');
 
-  protected readonly formats = FORMATS;
+  protected readonly modules: QuillModules = {
+    toolbar: [
+      [{ header: [2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['blockquote', 'code-block', 'link', 'image'],
+      ['clean'],
+    ],
+  };
 }

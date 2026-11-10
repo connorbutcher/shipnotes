@@ -31,7 +31,7 @@
                 "input": "public"
               }
             ],
-            "styles": ["node_modules/quill/dist/quill.core.css", "src/styles.scss"],
+            "styles": ["node_modules/quill/dist/quill.snow.css", "src/styles.scss"],
             "allowedCommonJsDependencies": ["quill-delta"]
           },
           "configurations": {
