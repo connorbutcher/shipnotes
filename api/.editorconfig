@@ -1,0 +1,30 @@
+root = true
+
+[*]
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.cs]
+indent_size = 4
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_using_directive_placement = outside_namespace
+dotnet_sort_system_directives_first = true
+csharp_style_var_for_built_in_types = true
+csharp_style_var_when_type_is_apparent = true
+dotnet_style_readonly_field = true:warning
+# Tests and controllers use descriptive names; CA1707 (underscores) is relaxed for test method names.
+dotnet_diagnostic.CA1707.severity = none
+# ConfigureAwait is unnecessary in ASP.NET Core apps.
+dotnet_diagnostic.CA2007.severity = none
+# Primary-constructor DI is used throughout.
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1848.severity = none
+
+[*.{csproj,props,json}]
+indent_size = 2
+
+# EF Core generated migrations are not hand-maintained.
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none

@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ShipNotes.Api/ShipNotes.Api.csproj" />
+    <Project Path="src/ShipNotes.Application/ShipNotes.Application.csproj" />
+    <Project Path="src/ShipNotes.Domain/ShipNotes.Domain.csproj" />
+    <Project Path="src/ShipNotes.Infrastructure/ShipNotes.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ShipNotes.Tests/ShipNotes.Tests.csproj" />
+  </Folder>
+</Solution>
