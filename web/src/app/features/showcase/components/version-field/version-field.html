@@ -1,0 +1,18 @@
+<div class="field">
+  <label [for]="inputId()">
+    {{ label() }}
+    @if (hint()) {
+      <em>{{ hint() }}</em>
+    }
+  </label>
+  <p-select
+    [inputId]="inputId()"
+    [options]="versions()"
+    [editable]="true"
+    [showClear]="true"
+    [placeholder]="placeholder()"
+    [ngModel]="value()"
+    (ngModelChange)="value.set($event ?? '')"
+    styleClass="w-full"
+  />
+</div>

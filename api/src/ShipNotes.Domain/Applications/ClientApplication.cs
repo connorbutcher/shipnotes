@@ -20,9 +20,13 @@ public sealed class ClientApplication : Entity
 
     public string ApiKeyPrefix { get; private set; } = string.Empty;
 
-    public static ClientApplication Create(string name, string? iconUrl, ApiKeyCredential credential, DateTimeOffset now)
+    public static ClientApplication Create(string name, string? iconUrl, ApiKeyCredential credential, DateTimeOffset now) =>
+        Create(Guid.CreateVersion7(), name, iconUrl, credential, now);
+
+    /// <summary>Creates an application with a known id, e.g. the seeded showcase demo.</summary>
+    public static ClientApplication Create(Guid id, string name, string? iconUrl, ApiKeyCredential credential, DateTimeOffset now)
     {
-        var application = new ClientApplication();
+        var application = new ClientApplication { Id = id };
         application.Update(name, iconUrl, now);
         application.SetApiKey(credential, now);
         return application;

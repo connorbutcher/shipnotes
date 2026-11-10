@@ -1,0 +1,25 @@
+<p-card>
+  <div class="stack-6">
+    <app-query-presets [activeId]="activePreset()" (selected)="choose($event)" />
+    <app-query-builder
+      [request]="request()"
+      (requestChange)="edit($event)"
+      [versions]="versions()"
+      [sending]="sending()"
+      (send)="send()"
+    />
+    <app-request-preview
+      [url]="url()"
+      [apiKey]="session().apiKey"
+      [sendApiKey]="request().sendApiKey"
+    />
+  </div>
+</p-card>
+
+@if (result(); as result) {
+  <p-card>
+    <app-query-response [result]="result" />
+  </p-card>
+} @else {
+  <p class="text-muted text-center">Pick a scenario or send a request to see the response here.</p>
+}

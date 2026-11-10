@@ -16,6 +16,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'showcase',
+        loadChildren: () =>
+          import('./features/showcase/showcase.routes').then((m) => m.SHOWCASE_ROUTES),
+      },
+      {
         path: 'applications',
         loadChildren: () =>
           import('./features/applications/applications.routes').then((m) => m.APPLICATION_ROUTES),

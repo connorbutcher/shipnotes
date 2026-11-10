@@ -1,0 +1,29 @@
+@let v = view();
+@if (v.kind === 'notes') {
+  <p class="text-muted text-sm">
+    {{ v.notes.length }} {{ v.notes.length === 1 ? 'note' : 'notes' }}, newest first
+  </p>
+  @for (note of v.notes; track note.version) {
+    <app-note-preview [note]="note" />
+  }
+} @else if (v.kind === 'application') {
+  <div class="application">
+    <app-icon [name]="v.application.name" [iconUrl]="v.application.iconUrl" [size]="48" />
+    <div>
+      <strong>{{ v.application.name }}</strong>
+      <p class="text-muted text-sm break-all">{{ v.application.iconUrl }}</p>
+    </div>
+  </div>
+} @else if (v.kind === 'problem') {
+  <p-message severity="warn" icon="pi pi-info-circle">
+    <span>
+      <strong>{{ result().status }} {{ result().statusText }}:</strong> {{ v.message }}
+    </span>
+  </p-message>
+} @else {
+  <app-empty-state
+    icon="pi-filter-slash"
+    heading="No notes matched"
+    message="Nothing was published in that range. Try different versions or include pre-releases."
+  />
+}

@@ -1,0 +1,8 @@
+// A small uppercase label above a section, e.g. "Request" or "Response".
+.eyebrow {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-muted);
+}
