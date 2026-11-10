@@ -43,7 +43,9 @@ describe('PublicApiConsole', () => {
   });
 
   it('reports errors as results instead of throwing', async () => {
-    const result = firstValueFrom(apiConsole.send(session, { ...DEFAULT_QUERY, sendApiKey: false }));
+    const result = firstValueFrom(
+      apiConsole.send(session, { ...DEFAULT_QUERY, sendApiKey: false }),
+    );
 
     const request = http.expectOne('/api/v1/public/applications/app-1/release-notes/latest');
     expect(request.request.headers.has('X-Api-Key')).toBe(false);
