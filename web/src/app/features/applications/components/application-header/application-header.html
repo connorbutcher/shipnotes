@@ -1,0 +1,5 @@
+<app-icon [name]="application().name" [iconUrl]="application().iconUrl" [size]="48" />
+<div>
+  <h1>{{ application().name }}</h1>
+  <p-tag severity="secondary" icon="pi pi-key" [value]="application().apiKeyPrefix + '…'" />
+</div>

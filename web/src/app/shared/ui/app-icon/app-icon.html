@@ -1,0 +1,7 @@
+<p-avatar
+  [image]="showImage() ? iconUrl()! : undefined"
+  [label]="showImage() ? undefined : initials()"
+  [style]="avatarStyle()"
+  aria-hidden="true"
+  (onImageError)="failed.set(true)"
+/>

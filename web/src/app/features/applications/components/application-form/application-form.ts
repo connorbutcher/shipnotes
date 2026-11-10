@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { InputText } from 'primeng/inputtext';
+import { Message } from 'primeng/message';
 import { Application, SaveApplicationRequest } from '../../../../core/models/application.model';
 import { AppIcon } from '../../../../shared/ui/app-icon/app-icon';
 
@@ -11,7 +16,17 @@ const URL_PATTERN = /^https?:\/\/\S+$/i;
 @Component({
   selector: 'app-application-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, AppIcon],
+  imports: [
+    ReactiveFormsModule,
+    ButtonDirective,
+    ButtonIcon,
+    ButtonLabel,
+    IconField,
+    InputIcon,
+    InputText,
+    Message,
+    AppIcon,
+  ],
   templateUrl: './application-form.html',
   styleUrl: './application-form.scss',
 })

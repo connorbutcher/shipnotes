@@ -1,28 +1,44 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { Tab, TabList, Tabs } from 'primeng/tabs';
+import { filter, map } from 'rxjs';
 
-interface Tab {
+interface SectionTab {
   label: string;
   path: string;
+  icon: string;
 }
 
+const TABS: readonly SectionTab[] = [
+  { label: 'Release notes', path: 'release-notes', icon: 'pi pi-list' },
+  { label: 'Integration', path: 'integration', icon: 'pi pi-code' },
+  { label: 'Settings', path: 'settings', icon: 'pi pi-cog' },
+];
+
+/** Router-driven PrimeNG tabs for an application's sections. */
 @Component({
   selector: 'app-application-tabs',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive],
-  template: `
-    <nav aria-label="Application sections">
-      @for (tab of tabs; track tab.path) {
-        <a [routerLink]="tab.path" routerLinkActive="active">{{ tab.label }}</a>
-      }
-    </nav>
-  `,
+  imports: [RouterLink, Tabs, TabList, Tab],
+  templateUrl: './application-tabs.html',
   styleUrl: './application-tabs.scss',
 })
 export class ApplicationTabs {
-  protected readonly tabs: readonly Tab[] = [
-    { label: 'Release notes', path: 'release-notes' },
-    { label: 'Integration', path: 'integration' },
-    { label: 'Settings', path: 'settings' },
-  ];
+  private readonly router = inject(Router);
+
+  protected readonly tabs = TABS;
+
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+
+  protected readonly activeTab = computed(() => {
+    const segments = this.url().split(/[/?#]/);
+    return TABS.find((tab) => segments.includes(tab.path))?.path ?? TABS[0].path;
+  });
 }

@@ -1,29 +1,45 @@
-<section class="card">
-  <h2>Authentication</h2>
+<p-card header="Authentication">
   <p class="muted">
     Send the application's API key in the <code>X-Api-Key</code> header. Only published notes are
     returned.
   </p>
-</section>
+</p-card>
 
-<section class="card">
-  <h2>Endpoints</h2>
-  <dl>
-    @for (endpoint of endpoints; track endpoint.path) {
-      <dt>
-        <code>{{ endpoint.path }}</code>
-      </dt>
-      <dd>{{ endpoint.description }}</dd>
-    }
-  </dl>
-</section>
+<p-card header="Endpoints">
+  <p-table [value]="endpoints" size="small">
+    <ng-template #header>
+      <tr>
+        <th scope="col">Endpoint</th>
+        <th scope="col">Description</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-endpoint>
+      <tr>
+        <td class="endpoint">
+          <code>{{ endpoint.path }}</code>
+        </td>
+        <td class="muted">{{ endpoint.description }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
 
-@for (snippet of snippets(); track snippet.title) {
-  <section class="card">
-    <div class="snippet-header">
-      <h2>{{ snippet.title }}</h2>
-      <app-copy-button [text]="snippet.code" />
-    </div>
-    <pre><code>{{ snippet.code }}</code></pre>
-  </section>
-}
+<p-card header="Examples">
+  <p-tabs [value]="snippets()[0].title">
+    <p-tablist>
+      @for (snippet of snippets(); track snippet.title) {
+        <p-tab [value]="snippet.title">{{ snippet.title }}</p-tab>
+      }
+    </p-tablist>
+    <p-tabpanels>
+      @for (snippet of snippets(); track snippet.title) {
+        <p-tabpanel [value]="snippet.title">
+          <div class="snippet-actions">
+            <app-copy-button [text]="snippet.code" />
+          </div>
+          <pre><code>{{ snippet.code }}</code></pre>
+        </p-tabpanel>
+      }
+    </p-tabpanels>
+  </p-tabs>
+</p-card>

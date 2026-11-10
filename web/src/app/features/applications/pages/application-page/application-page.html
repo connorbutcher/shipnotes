@@ -1,0 +1,21 @@
+@if (application(); as application) {
+  <div class="page">
+    <app-application-header [application]="application" />
+    @if (issuedKey(); as key) {
+      <app-api-key-reveal [apiKey]="key" (dismissed)="store.clearIssuedKey()" />
+    }
+    <app-application-tabs />
+    <router-outlet />
+  </div>
+} @else if (!store.loading()) {
+  <app-empty-state
+    icon="pi-question-circle"
+    heading="Application not found"
+    message="It may have been deleted."
+  >
+    <a pButton routerLink="/" severity="secondary" [outlined]="true">
+      <i class="pi pi-arrow-left" pButtonIcon></i>
+      <span pButtonLabel>Back</span>
+    </a>
+  </app-empty-state>
+}

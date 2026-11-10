@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { ApplicationsStore } from '../../../../core/state/applications-store';
 import { ApiKeyReveal } from '../../../../shared/ui/api-key-reveal/api-key-reveal';
 import { EmptyState } from '../../../../shared/ui/empty-state/empty-state';
@@ -10,31 +11,19 @@ import { ApplicationTabs } from '../../components/application-tabs/application-t
 @Component({
   selector: 'app-application-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, RouterLink, ApplicationHeader, ApplicationTabs, ApiKeyReveal, EmptyState],
-  template: `
-    @if (application(); as application) {
-      <div class="page">
-        <app-application-header [application]="application" />
-        @if (issuedKey(); as key) {
-          <app-api-key-reveal [apiKey]="key" (dismissed)="store.clearIssuedKey()" />
-        }
-        <app-application-tabs />
-        <router-outlet />
-      </div>
-    } @else if (!store.loading()) {
-      <app-empty-state heading="Application not found" message="It may have been deleted.">
-        <a class="button secondary" routerLink="/">Back</a>
-      </app-empty-state>
-    }
-  `,
-  styles: `
-    .page {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      max-width: 60rem;
-    }
-  `,
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    ButtonDirective,
+    ButtonIcon,
+    ButtonLabel,
+    ApplicationHeader,
+    ApplicationTabs,
+    ApiKeyReveal,
+    EmptyState,
+  ],
+  templateUrl: './application-page.html',
+  styleUrl: './application-page.scss',
 })
 export class ApplicationPage {
   protected readonly store = inject(ApplicationsStore);

@@ -1,38 +1,18 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { MessageService } from 'primeng/api';
 
-export type NotificationKind = 'success' | 'error';
+const LIFE_MS = 5000;
 
-export interface Notification {
-  id: number;
-  kind: NotificationKind;
-  message: string;
-}
-
-const AUTO_DISMISS_MS = 5000;
-
-/** Transient toast messages shown by the toast outlet. */
+/** Transient toast messages, rendered by the PrimeNG toast in the shell. */
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private nextId = 0;
-  private readonly items = signal<Notification[]>([]);
-
-  readonly notifications = this.items.asReadonly();
+  private readonly messages = inject(MessageService);
 
   success(message: string): void {
-    this.push('success', message);
+    this.messages.add({ severity: 'success', summary: 'Done', detail: message, life: LIFE_MS });
   }
 
   error(message: string): void {
-    this.push('error', message);
-  }
-
-  dismiss(id: number): void {
-    this.items.update((items) => items.filter((n) => n.id !== id));
-  }
-
-  private push(kind: NotificationKind, message: string): void {
-    const id = this.nextId++;
-    this.items.update((items) => [...items, { id, kind, message }]);
-    setTimeout(() => this.dismiss(id), AUTO_DISMISS_MS);
+    this.messages.add({ severity: 'error', summary: 'Error', detail: message, life: LIFE_MS });
   }
 }
