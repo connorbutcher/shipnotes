@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Tag } from 'primeng/tag';
-import { PublicReleaseNote } from '../../../../core/models/public-release-note.model';
+import { PublicReleaseNote } from '../../../core/models/public-release-note.model';
 
 /**
  * One release note rendered the way a consuming app would show it. The HTML was sanitised by

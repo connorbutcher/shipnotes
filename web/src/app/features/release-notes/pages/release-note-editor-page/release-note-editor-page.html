@@ -28,12 +28,18 @@
     These release notes could not be loaded.
   </p-message>
 } @else {
-  <p-card>
-    <app-release-note-form
-      [releaseNote]="note.value() ?? null"
-      [saving]="saving()"
-      [uploadImage]="uploadImage()"
-      (saved)="save($event)"
-    />
-  </p-card>
+  <div class="workspace">
+    <p-card>
+      <app-release-note-form
+        [releaseNote]="note.value() ?? null"
+        [saving]="saving()"
+        [uploadImage]="uploadImage()"
+        (saved)="save($event)"
+        (draftChanged)="draft.set($event)"
+      />
+    </p-card>
+    <aside aria-label="Live preview">
+      <app-release-note-preview [note]="preview()" [published]="draft().isPublished" />
+    </aside>
+  </div>
 }

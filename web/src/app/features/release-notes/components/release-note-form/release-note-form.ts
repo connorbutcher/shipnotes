@@ -7,13 +7,14 @@ import {
   input,
   output,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { outputFromObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { ToggleSwitch } from 'primeng/toggleswitch';
+import { map, startWith } from 'rxjs';
 import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
 import { isPreRelease, semverValidator } from '../../../../shared/validators/semver.validator';
 import { normalizeEditorHtml } from '../../../../shared/utils/editor-html';
@@ -56,6 +57,14 @@ export class ReleaseNoteForm {
     isPublished: [false],
   });
 
+  /** The form's current values on every change, for the live preview. */
+  readonly draftChanged = outputFromObservable(
+    this.form.valueChanges.pipe(
+      startWith(null),
+      map(() => this.toRequest()),
+    ),
+  );
+
   private readonly version = toSignal(this.form.controls.version.valueChanges, {
     initialValue: '',
   });
@@ -81,12 +90,16 @@ export class ReleaseNoteForm {
       return;
     }
 
+    this.saved.emit(this.toRequest());
+  }
+
+  private toRequest(): SaveReleaseNoteRequest {
     const value = this.form.getRawValue();
-    this.saved.emit({
+    return {
       ...value,
       version: value.version.trim(),
       title: value.title.trim(),
       contentHtml: normalizeEditorHtml(value.contentHtml),
-    });
+    };
   }
 }
