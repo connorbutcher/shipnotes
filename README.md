@@ -85,6 +85,19 @@ curl -H "X-Api-Key: $SHIPNOTES_API_KEY" \
 
 `contentHtml` is sanitised on the server with an allow-list, so it can be rendered directly. The public endpoints allow any origin (CORS) and are rate limited to 120 requests per minute per key.
 
+## Showcase
+
+Open **Showcase** at the top of the side panel to see the whole flow working without writing anything yourself.
+
+![Showcase](docs/showcase.png)
+
+- The first visit seeds a demo application, **Orbit Tasks (demo)**, with nine release notes from 1.0.0 to 2.1.0: stable versions, a patch release, two pre-releases, a major version and an unpublished draft. Several notes contain screenshots, which are uploaded through the normal media pipeline, so they are stored under `Media:RootPath` and tracked in `MediaData` like any other image.
+- The page is a live console for the public API. Pick a scenario ("Upgraded from 1.1.0 to 2.0.0", "Include pre-releases", "Missing API key (401)" and so on) or build a request yourself, then see the exact request, a curl command, the status and timing, the raw JSON, and the notes rendered with their images as a consuming app would show them.
+- Each visit issues the demo a new API key (keys are still only shown once), so a key copied from an earlier visit stops working. **Reset demo** deletes the demo application, including any edits, and seeds it again.
+- The demo is a normal application, so you can open it from the side panel and edit its notes.
+- Endpoints: `POST /api/v1/showcase/session` and `POST /api/v1/showcase/reset`. They return `404` unless `Showcase:Enabled` is `true`, which it is only in `appsettings.Development.json`. Leave it off in production, because anyone who can reach the admin API could rotate the demo key.
+- The demo content lives in `api/src/ShipNotes.Application/Showcase/Content` (HTML notes and PNG images, embedded in the assembly) and the list of notes in `ShowcaseCatalog.cs`.
+
 ## Design notes
 
 **API layers** (`api/src`), each project depending only on the one before it:

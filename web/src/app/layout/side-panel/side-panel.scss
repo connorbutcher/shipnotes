@@ -23,6 +23,30 @@
   }
 }
 
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  padding: var(--space-2) var(--space-2-5);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--color-hover);
+  }
+
+  &.active {
+    background: var(--color-highlight-bg);
+    color: var(--color-highlight-text);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .pi {
+    color: var(--color-accent);
+  }
+}
+
 .section-header {
   display: flex;
   align-items: center;

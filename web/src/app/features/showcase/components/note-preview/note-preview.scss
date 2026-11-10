@@ -1,0 +1,65 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h3 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+// Note HTML is not part of this component's template, so its styles must reach into it.
+:host ::ng-deep .content {
+  line-height: var(--line-height-base);
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  h2 {
+    margin: var(--space-4) 0 var(--space-2);
+    font-size: var(--font-size-base);
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: var(--border-width-thin) solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+  }
+
+  blockquote {
+    margin: var(--space-3) 0;
+    padding: var(--space-2) var(--space-4);
+    border-left: var(--border-width-thick) solid var(--color-accent);
+    color: var(--color-muted);
+  }
+
+  code {
+    padding: var(--space-0-5) var(--space-1);
+    border-radius: var(--radius-sm);
+    background: var(--color-hover);
+    font-size: var(--font-size-sm);
+  }
+
+  a {
+    color: var(--color-accent-strong);
+  }
+}

@@ -1,0 +1,13 @@
+<header>
+  <div class="d-flex items-center gap-2">
+    <p-tag [value]="'v' + note().version" [severity]="note().isPreRelease ? 'warn' : 'success'" />
+    @if (note().isPreRelease) {
+      <p-tag value="Pre-release" severity="secondary" />
+    }
+  </div>
+  <time class="text-muted text-sm" [attr.datetime]="note().publishedAt">
+    {{ note().publishedAt | date: 'mediumDate' }}
+  </time>
+</header>
+<h3>{{ note().title }}</h3>
+<div class="content" [innerHTML]="note().contentHtml"></div>

@@ -1,0 +1,14 @@
+<span class="eyebrow">Try a scenario</span>
+<div class="d-flex flex-wrap gap-2" role="group" aria-label="Example queries">
+  @for (preset of presets; track preset.id) {
+    <p-button
+      size="small"
+      [label]="preset.label"
+      [icon]="preset.icon"
+      [rounded]="true"
+      [outlined]="activeId() !== preset.id"
+      [severity]="preset.expectedStatus >= 400 ? 'warn' : 'primary'"
+      (onClick)="selected.emit(preset)"
+    />
+  }
+</div>

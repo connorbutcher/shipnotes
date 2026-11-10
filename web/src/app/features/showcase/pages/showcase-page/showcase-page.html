@@ -1,0 +1,37 @@
+@switch (store.status()) {
+  @case ('ready') {
+    @if (store.session(); as session) {
+      <div class="page">
+        <app-showcase-header
+          [application]="session.application"
+          [resetting]="store.resetting()"
+          (resetRequested)="reset()"
+        />
+        <p-message severity="secondary" icon="pi pi-key" size="small">
+          A new API key was issued to the demo for this visit, so the requests below are real calls
+          to the public API, authenticated just like your app's.
+        </p-message>
+        <app-query-console [session]="session" [versions]="versions()" />
+      </div>
+    }
+  }
+  @case ('disabled') {
+    <app-empty-state
+      icon="pi-power-off"
+      heading="The showcase is turned off"
+      message="Set Showcase:Enabled to true in the API's configuration to seed the demo application. It's on by default in Development."
+    />
+  }
+  @case ('failed') {
+    <app-empty-state
+      icon="pi-exclamation-circle"
+      heading="The showcase couldn't start"
+      [message]="store.error() ?? ''"
+    >
+      <p-button label="Try again" icon="pi pi-refresh" (onClick)="store.start()" />
+    </app-empty-state>
+  }
+  @default {
+    <app-loading-state label="Setting up the demo application…" />
+  }
+}

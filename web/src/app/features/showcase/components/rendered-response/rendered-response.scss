@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+p {
+  margin: 0;
+}
+
+.application {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}

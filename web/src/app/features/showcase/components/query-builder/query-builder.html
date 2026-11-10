@@ -1,0 +1,127 @@
+<form class="stack-4" (ngSubmit)="send.emit()">
+  <div class="field">
+    <label for="query-endpoint">Endpoint</label>
+    <p-select
+      inputId="query-endpoint"
+      name="endpoint"
+      [options]="endpointOptions"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="request().endpoint"
+      (ngModelChange)="patch({ endpoint: $event })"
+      styleClass="w-full font-mono"
+    />
+    <small class="text-muted">{{ endpoint().description }}</small>
+  </div>
+
+  @if (endpoint().fields.length) {
+    <div class="options">
+      @if (has('version')) {
+        <app-version-field
+          inputId="query-version"
+          label="Version"
+          placeholder="e.g. 1.2.0"
+          [versions]="versions()"
+          [value]="request().version"
+          (valueChange)="patch({ version: $event })"
+        />
+      }
+      @if (has('from')) {
+        <app-version-field
+          inputId="query-from"
+          label="From"
+          hint="(version the user had)"
+          [versions]="versions()"
+          [value]="request().from"
+          (valueChange)="patch({ from: $event })"
+        />
+      }
+      @if (has('to')) {
+        <app-version-field
+          inputId="query-to"
+          label="To"
+          hint="(version they have now)"
+          [versions]="versions()"
+          [value]="request().to"
+          (valueChange)="patch({ to: $event })"
+        />
+      }
+      @if (has('after')) {
+        <app-version-field
+          inputId="query-after"
+          label="After"
+          hint="(exclusive)"
+          [versions]="versions()"
+          [value]="request().after"
+          (valueChange)="patch({ after: $event })"
+        />
+      }
+      @if (has('upTo')) {
+        <app-version-field
+          inputId="query-up-to"
+          label="Up to"
+          hint="(inclusive)"
+          [versions]="versions()"
+          [value]="request().upTo"
+          (valueChange)="patch({ upTo: $event })"
+        />
+      }
+      @if (has('limit')) {
+        <div class="field">
+          <label for="query-limit"
+            >Limit <em>(1-{{ limitMax }}, default 20)</em></label
+          >
+          <p-inputnumber
+            inputId="query-limit"
+            name="limit"
+            [min]="1"
+            [max]="limitMax"
+            [showButtons]="true"
+            placeholder="20"
+            [ngModel]="request().limit"
+            (ngModelChange)="patch({ limit: $event })"
+            styleClass="w-full"
+          />
+        </div>
+      }
+    </div>
+  }
+
+  <div class="switches">
+    @if (has('includeFrom')) {
+      <div class="switch">
+        <p-toggleswitch
+          inputId="query-include-from"
+          name="includeFrom"
+          [ngModel]="request().includeFrom"
+          (ngModelChange)="patch({ includeFrom: $event })"
+        />
+        <label for="query-include-from">Include "from" version</label>
+      </div>
+    }
+    @if (has('includePreReleases')) {
+      <div class="switch">
+        <p-toggleswitch
+          inputId="query-include-pre-releases"
+          name="includePreReleases"
+          [ngModel]="request().includePreReleases"
+          (ngModelChange)="patch({ includePreReleases: $event })"
+        />
+        <label for="query-include-pre-releases">Include pre-releases</label>
+      </div>
+    }
+    <div class="switch">
+      <p-toggleswitch
+        inputId="query-send-api-key"
+        name="sendApiKey"
+        [ngModel]="request().sendApiKey"
+        (ngModelChange)="patch({ sendApiKey: $event })"
+      />
+      <label for="query-send-api-key">Send API key</label>
+    </div>
+  </div>
+
+  <div>
+    <p-button type="submit" label="Send request" icon="pi pi-send" [loading]="sending()" />
+  </div>
+</form>

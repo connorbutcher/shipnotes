@@ -77,6 +77,8 @@ $layout: (
   'prose-max-width': 28rem,
   'narrow-max-width': 40rem,
   'editor-min-height': 18rem,
+  'field-min-width': 12rem,
+  'response-max-height': 32rem,
 );
 
 // Semantic colours, mapped onto the PrimeNG theme's --p-* variables so the app has
@@ -100,4 +102,7 @@ $colors: (
   'danger-border': var(--p-red-200),
   'code-bg': var(--p-surface-900),
   'code-text': var(--p-surface-200),
+  'code-keyword': var(--p-green-300),
+  'code-attribute': var(--p-sky-300),
+  'code-comment': var(--p-surface-400),
 );

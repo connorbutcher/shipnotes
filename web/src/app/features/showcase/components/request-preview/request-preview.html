@@ -1,0 +1,20 @@
+<div class="row-between">
+  <span class="eyebrow">Request</span>
+  <app-copy-button [text]="curl()" label="Copy as curl" />
+</div>
+
+<pre class="request"><code><span class="method">GET</span> {{ url() }}
+@if (sendApiKey()) {<span class="header">X-Api-Key:</span> {{ shownKey() }}} @else {<span class="muted"># No X-Api-Key header</span>}</code></pre>
+
+@if (sendApiKey()) {
+  <div>
+    <p-button
+      size="small"
+      [text]="true"
+      severity="secondary"
+      [icon]="revealed() ? 'pi pi-eye-slash' : 'pi pi-eye'"
+      [label]="revealed() ? 'Hide key' : 'Show full key'"
+      (onClick)="revealed.set(!revealed())"
+    />
+  </div>
+}

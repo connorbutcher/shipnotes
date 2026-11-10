@@ -1,0 +1,22 @@
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--field-min-width), 1fr));
+  gap: var(--space-4);
+}
+
+.switches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+
+  label {
+    cursor: pointer;
+  }
+}

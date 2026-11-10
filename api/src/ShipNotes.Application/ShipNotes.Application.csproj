@@ -10,6 +10,11 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.14" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Demo notes and images for the showcase, read by ShowcaseContent. Flat names so they match on every OS. -->
+    <EmbeddedResource Include="Showcase\Content\**\*" LogicalName="ShipNotes.Showcase.%(Filename)%(Extension)" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

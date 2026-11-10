@@ -73,7 +73,8 @@ export class ApplicationsStore {
     this.issuedKey.set(null);
   }
 
-  private upsert(application: Application): void {
+  /** Adds or replaces an application created elsewhere, e.g. the showcase demo. */
+  upsert(application: Application): void {
     this.state.update((apps) =>
       [...apps.filter((a) => a.id !== application.id), application].sort((a, b) =>
         a.name.localeCompare(b.name),

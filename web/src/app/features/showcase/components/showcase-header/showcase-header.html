@@ -1,0 +1,33 @@
+<div class="identity">
+  <app-icon [name]="application().name" [iconUrl]="application().iconUrl" [size]="56" />
+  <div class="stack-1">
+    <div class="d-flex items-center gap-2">
+      <h1>Showcase</h1>
+      <p-tag value="Demo data" severity="info" icon="pi pi-sparkles" />
+    </div>
+    <p class="text-muted">
+      {{ application().name }} is a seeded demo application with real release notes, images and an
+      API key. Query it below exactly as your own app would.
+    </p>
+  </div>
+</div>
+
+<div class="actions">
+  <a
+    pButton
+    severity="secondary"
+    [outlined]="true"
+    [routerLink]="['/applications', application().id]"
+  >
+    <i class="pi pi-pencil" pButtonIcon></i>
+    <span pButtonLabel>Edit demo notes</span>
+  </a>
+  <p-button
+    label="Reset demo"
+    icon="pi pi-refresh"
+    severity="secondary"
+    [text]="true"
+    [loading]="resetting()"
+    (onClick)="resetRequested.emit()"
+  />
+</div>

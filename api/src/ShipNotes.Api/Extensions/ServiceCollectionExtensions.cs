@@ -6,6 +6,7 @@ using ShipNotes.Api.Authorization;
 using ShipNotes.Api.ErrorHandling;
 using ShipNotes.Api.Media;
 using ShipNotes.Application.Abstractions;
+using ShipNotes.Application.Showcase;
 
 namespace ShipNotes.Api.Extensions;
 
@@ -19,6 +20,7 @@ internal static class ServiceCollectionExtensions
         services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
         services.AddHttpContextAccessor();
         services.AddScoped<IMediaUrlProvider, HttpMediaUrlProvider>();
+        services.AddOptions<ShowcaseOptions>().Bind(configuration.GetSection(ShowcaseOptions.SectionName));
 
         services.AddApiKeyAuthentication();
         services.AddShipNotesCors(configuration);

@@ -1,0 +1,23 @@
+<div class="summary">
+  <span class="eyebrow">Response</span>
+  <p-tag [severity]="severity()" [value]="result().status + ' ' + result().statusText" />
+  <span class="text-muted text-sm">{{ result().durationMs }} ms</span>
+</div>
+
+<p-tabs value="rendered">
+  <p-tablist>
+    <p-tab value="rendered"><i class="pi pi-eye" aria-hidden="true"></i> Rendered</p-tab>
+    <p-tab value="json"><i class="pi pi-code" aria-hidden="true"></i> JSON</p-tab>
+  </p-tablist>
+  <p-tabpanels>
+    <p-tabpanel value="rendered">
+      <app-rendered-response [result]="result()" />
+    </p-tabpanel>
+    <p-tabpanel value="json">
+      <div class="d-flex justify-end mb-2">
+        <app-copy-button [text]="json()" label="Copy JSON" />
+      </div>
+      <pre><code>{{ json() }}</code></pre>
+    </p-tabpanel>
+  </p-tabpanels>
+</p-tabs>
