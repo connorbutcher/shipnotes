@@ -25,6 +25,11 @@ internal sealed class ReleaseNoteRepository(ShipNotesDbContext db) : IReleaseNot
             notes = notes.Where(n => n.VersionSortKey.CompareTo(after) > 0);
         }
 
+        if (query.FromSortKey is { } from)
+        {
+            notes = notes.Where(n => n.VersionSortKey.CompareTo(from) >= 0);
+        }
+
         if (query.UpToSortKey is { } upTo)
         {
             notes = notes.Where(n => n.VersionSortKey.CompareTo(upTo) <= 0);

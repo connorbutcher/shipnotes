@@ -1,6 +1,8 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using ShipNotes.Api.Authentication;
+using ShipNotes.Api.Authorization;
 using ShipNotes.Api.ErrorHandling;
 using ShipNotes.Api.Media;
 using ShipNotes.Application.Abstractions;
@@ -29,7 +31,12 @@ internal static class ServiceCollectionExtensions
     {
         services.AddAuthentication()
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationDefaults.Scheme, null);
-        services.AddAuthorization();
+        services.AddSingleton<IAuthorizationHandler, ApiKeyMatchesApplicationHandler>();
+        services.AddAuthorizationBuilder()
+            .AddPolicy(AuthorizationPolicies.ApplicationApiKey, policy => policy
+                .AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.Scheme)
+                .RequireAuthenticatedUser()
+                .AddRequirements(new ApiKeyMatchesApplicationRequirement()));
     }
 
     private static void AddShipNotesCors(this IServiceCollection services, IConfiguration configuration)

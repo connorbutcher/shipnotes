@@ -8,6 +8,11 @@ p {
   margin: 0;
 }
 
+.base-path {
+  margin-bottom: var(--space-3);
+  overflow-wrap: anywhere;
+}
+
 .endpoint {
   white-space: nowrap;
 }

@@ -1,11 +1,21 @@
 <p-card header="Authentication">
-  <p class="text-muted">
-    Send the application's API key in the <code>X-Api-Key</code> header. Only published notes are
-    returned.
-  </p>
+  <div class="d-flex flex-col gap-3">
+    <p class="text-muted">
+      Every request must send this application's API key in the <code>X-Api-Key</code> header. The
+      key must belong to the application in the URL: a missing or unknown key returns 401, and a key
+      for a different application returns 403. Only published notes are returned.
+    </p>
+    <p class="text-muted">
+      Versions are compared by semantic version precedence, so 1.10.0 comes after 1.9.0 and
+      2.0.0-beta.1 comes before 2.0.0.
+    </p>
+  </div>
 </p-card>
 
 <p-card header="Endpoints">
+  <p class="text-muted base-path">
+    All paths are relative to <code>{{ basePath() }}</code>
+  </p>
   <p-table [value]="endpoints" size="small">
     <ng-template #header>
       <tr>
