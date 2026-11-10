@@ -1,0 +1,19 @@
+@use '../abstracts' as *;
+
+:root {
+  @include custom-properties('space', $spacing);
+  @include custom-properties('font', $font-families);
+  @include custom-properties('font-size', $font-sizes);
+  @include custom-properties('font-weight', $font-weights);
+  @include custom-properties('line-height', $line-heights);
+  @include custom-properties('letter-spacing', $letter-spacings);
+  @include custom-properties('radius', $radii);
+  @include custom-properties('border-width', $border-widths);
+  @include custom-properties('shadow', $shadows);
+  @include custom-properties('z', $z-indices);
+  @include custom-properties('color', $colors);
+
+  @each $key, $value in $layout {
+    --#{$key}: #{$value};
+  }
+}

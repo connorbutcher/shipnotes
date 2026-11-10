@@ -1,0 +1,10 @@
+@use '../abstracts' as *;
+
+// Text and background colour helpers for every colour token, e.g. .text-muted, .bg-surface.
+@include token-classes('text', (color), $colors, 'color');
+@include token-classes('bg', (background-color), $colors, 'color');
+
+// Kept for existing templates; prefer .text-muted in new markup.
+.muted {
+  color: var(--color-muted);
+}

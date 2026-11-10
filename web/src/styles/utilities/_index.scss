@@ -1,0 +1,7 @@
+// Single-purpose helper classes generated from the design tokens.
+// Loaded last so they override component defaults.
+@forward 'spacing';
+@forward 'layout';
+@forward 'typography';
+@forward 'colors';
+@forward 'borders';
