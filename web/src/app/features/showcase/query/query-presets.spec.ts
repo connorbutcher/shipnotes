@@ -14,4 +14,13 @@ describe('applyPreset', () => {
   it('has unique ids', () => {
     expect(new Set(QUERY_PRESETS.map((p) => p.id)).size).toBe(QUERY_PRESETS.length);
   });
+
+  it('clears categories left by an earlier category preset', () => {
+    const filtered = QUERY_PRESETS.find((p) => p.id === 'latest-breaking')!;
+    const latest = QUERY_PRESETS.find((p) => p.id === 'whats-new')!;
+
+    const afterFiltered = applyPreset(DEFAULT_QUERY, filtered);
+    expect(afterFiltered.categories).toEqual(['breaking']);
+    expect(applyPreset(afterFiltered, latest).categories).toEqual([]);
+  });
 });

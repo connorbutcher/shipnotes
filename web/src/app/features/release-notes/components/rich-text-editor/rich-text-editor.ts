@@ -11,6 +11,7 @@ import { ImageUploader, enableImageUpload } from './editor-image-upload';
   imports: [ReactiveFormsModule, QuillEditorComponent],
   templateUrl: './rich-text-editor.html',
   styleUrl: './rich-text-editor.scss',
+  host: { '[class.compact]': 'compact()' },
 })
 export class RichTextEditor {
   private readonly destroyRef = inject(DestroyRef);
@@ -19,6 +20,8 @@ export class RichTextEditor {
   readonly placeholder = input('Describe what changed…');
   /** Uploads images added in the editor. Without one, images cannot be added. */
   readonly uploadImage = input<ImageUploader | null>(null);
+  /** A shorter editor, for the smaller sections of a note. */
+  readonly compact = input(false);
 
   protected readonly modules: QuillModules = {
     toolbar: [

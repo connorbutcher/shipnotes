@@ -5,6 +5,7 @@ import { InputNumber } from 'primeng/inputnumber';
 import { Select } from 'primeng/select';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ENDPOINTS, QueryField, QueryRequest, endpointById } from '../../query/query-request';
+import { CategoryField } from '../category-field/category-field';
 import { VersionField } from '../version-field/version-field';
 
 const LIMIT_MAX = 100;
@@ -13,7 +14,7 @@ const LIMIT_MAX = 100;
 @Component({
   selector: 'app-query-builder',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, Button, InputNumber, Select, ToggleSwitch, VersionField],
+  imports: [FormsModule, Button, InputNumber, Select, ToggleSwitch, VersionField, CategoryField],
   templateUrl: './query-builder.html',
   styleUrl: './query-builder.scss',
 })

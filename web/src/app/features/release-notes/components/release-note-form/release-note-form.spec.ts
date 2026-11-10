@@ -21,7 +21,7 @@ describe('ReleaseNoteForm', () => {
       element.querySelector('form')!.dispatchEvent(new Event('submit'));
       fixture.detectChanges();
     };
-    return { element, saved, drafts, type, submit };
+    return { fixture, element, saved, drafts, type, submit };
   }
 
   it('rejects versions that are not semver', () => {
@@ -45,8 +45,46 @@ describe('ReleaseNoteForm', () => {
     type('title', ' Faster ');
     submit();
     expect(saved).toEqual([
-      { version: '1.2.0', title: 'Faster', contentHtml: '', isPublished: false },
+      { version: '1.2.0', title: 'Faster', summaryHtml: '', sections: [], isPublished: false },
     ]);
+  });
+
+  it('loads the sections of an existing note', () => {
+    const fixture = TestBed.createComponent(ReleaseNoteForm);
+    fixture.componentRef.setInput('releaseNote', {
+      id: 'n1',
+      applicationId: 'a1',
+      version: '2.0.0',
+      isPreRelease: false,
+      title: 'Big',
+      summaryHtml: '<p>Intro</p>',
+      sections: [
+        { category: 'breaking', contentHtml: '<p>B</p>' },
+        { category: 'fixed', contentHtml: '<p>F</p>' },
+      ],
+      isPublished: true,
+      publishedAt: null,
+      createdAt: '',
+      updatedAt: '',
+    });
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+
+    const tags = [...element.querySelectorAll('app-release-note-section app-category-tag')];
+    expect(tags.map((t) => t.textContent?.trim())).toEqual(['Breaking changes', 'Fixed']);
+    expect(element.querySelector('app-category-picker')?.textContent).not.toContain('Fixed');
+  });
+
+  it('adds a section from the category picker', () => {
+    const { fixture, element } = setup();
+    const addSecurity = [
+      ...element.querySelectorAll<HTMLButtonElement>('app-category-picker button'),
+    ].find((b) => b.textContent?.includes('Security'))!;
+
+    addSecurity.click();
+    fixture.detectChanges();
+
+    expect(element.querySelectorAll('app-release-note-section').length).toBe(1);
   });
 
   it('emits the draft as the user types, for the live preview', () => {
@@ -56,7 +94,8 @@ describe('ReleaseNoteForm', () => {
     expect(drafts.at(-1)).toEqual({
       version: '1.3.0',
       title: 'Dark mode',
-      contentHtml: '',
+      summaryHtml: '',
+      sections: [],
       isPublished: false,
     });
   });

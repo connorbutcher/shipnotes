@@ -1,11 +1,17 @@
+import { SaveReleaseNoteRequest } from '../../../core/models/release-note.model';
 import { hasPreviewContent, toPreviewNote } from './preview-note';
 
 describe('toPreviewNote', () => {
   const now = new Date('2026-11-10T12:00:00Z');
-  const draft = {
+  const draft: SaveReleaseNoteRequest = {
     version: ' 2.0.0-beta.1 ',
     title: ' Dark mode ',
-    contentHtml: '<p>Hello&nbsp;world</p>',
+    summaryHtml: '<p>Hello&nbsp;world</p>',
+    sections: [
+      { category: 'fixed', contentHtml: '<p>Crash on start</p>' },
+      { category: 'added', contentHtml: '<p>Dark mode</p>' },
+      { category: 'security', contentHtml: '<p><br></p>' },
+    ],
     isPublished: false,
   };
 
@@ -14,7 +20,15 @@ describe('toPreviewNote', () => {
       version: '2.0.0-beta.1',
       isPreRelease: true,
       title: 'Dark mode',
-      contentHtml: '<p>Hello world</p>',
+      summaryHtml: '<p>Hello world</p>',
+      sections: [
+        { category: 'added', label: 'Added', contentHtml: '<p>Dark mode</p>' },
+        { category: 'fixed', label: 'Fixed', contentHtml: '<p>Crash on start</p>' },
+      ],
+      contentHtml:
+        '<p>Hello world</p>' +
+        '<section data-category="added"><h2>Added</h2><p>Dark mode</p></section>' +
+        '<section data-category="fixed"><h2>Fixed</h2><p>Crash on start</p></section>',
       publishedAt: now.toISOString(),
     });
   });
@@ -26,7 +40,11 @@ describe('toPreviewNote', () => {
   });
 
   it('reports an empty draft as having nothing to preview', () => {
-    const empty = toPreviewNote({ ...draft, version: '', title: '', contentHtml: '' }, null, now);
+    const empty = toPreviewNote(
+      { ...draft, version: '', title: '', summaryHtml: '', sections: [] },
+      null,
+      now,
+    );
     expect(hasPreviewContent(empty)).toBe(false);
     expect(hasPreviewContent(toPreviewNote(draft, null, now))).toBe(true);
   });
