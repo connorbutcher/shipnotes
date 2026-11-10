@@ -1,3 +1,4 @@
+using AngleSharp.Html.Parser;
 using Ganss.Xss;
 using ShipNotes.Application.Abstractions;
 
@@ -16,7 +17,38 @@ internal sealed class HtmlContentSanitizer : IHtmlContentSanitizer
 
     private readonly HtmlSanitizer sanitizer = CreateSanitizer();
 
-    public string Sanitize(string html) => sanitizer.Sanitize(html ?? string.Empty);
+    public string Sanitize(string html, Func<string, string?>? resolveImageSource = null)
+    {
+        var clean = sanitizer.Sanitize(html ?? string.Empty);
+        return clean.Contains("<img", StringComparison.OrdinalIgnoreCase)
+            ? ResolveImages(clean, resolveImageSource)
+            : clean;
+    }
+
+    /// <summary>
+    /// Keeps only images whose source the caller recognises (uploaded media), so inline data URIs
+    /// and hot-linked images never reach consuming apps.
+    /// </summary>
+    private static string ResolveImages(string html, Func<string, string?>? resolveImageSource)
+    {
+        var document = new HtmlParser().ParseDocument(html);
+        var body = document.Body!;
+
+        foreach (var image in body.QuerySelectorAll("img").ToList())
+        {
+            var source = resolveImageSource?.Invoke(image.GetAttribute("src") ?? string.Empty);
+            if (source is null)
+            {
+                image.Remove();
+            }
+            else
+            {
+                image.SetAttribute("src", source);
+            }
+        }
+
+        return body.InnerHtml;
+    }
 
     private static HtmlSanitizer CreateSanitizer()
     {

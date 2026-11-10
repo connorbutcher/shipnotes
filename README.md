@@ -34,6 +34,16 @@ npm start
 
 The development connection string is in `api/src/ShipNotes.Api/appsettings.Development.json`. For other environments set `ConnectionStrings__ShipNotes` and `Cors__AdminOrigins__0`, and apply the schema with `database/shipnotes.sql` (an idempotent script) or `dotnet ef database update`.
 
+## Images in release notes
+
+Images are never stored inline in a note. The editor's image button (and pasting or dropping an image file) uploads the file to `POST /api/v1/applications/{id}/media`, which saves it to disk and inserts its URL, e.g. `https://your-api/api/v1/media/{mediaId}/screenshot.png`, into the note. Each upload is tracked in the `MediaData` table (file name, type, size, storage path and the release note that uses it).
+
+- Files are written to `Media:RootPath` (default `F:\Dev\ShipNotesMedia`) as `{applicationId}/{mediaId}.{ext}`.
+- Media URLs use `Media:PublicBaseUrl` when set (set it in production, e.g. `Media__PublicBaseUrl=https://notes.example.com`); otherwise the API's own address.
+- Only PNG, JPEG, GIF and WebP up to `Media:MaxFileSizeBytes` (5 MB) are accepted; the type is checked from the file's content, not its name.
+- When a note is saved the server keeps only `<img>` tags pointing at media uploaded to that application, so base64 and hot-linked images are removed. Removing an image from a note, or deleting the note or application, deletes the files too.
+- `GET /api/v1/media/{mediaId}/{fileName}` is anonymous and cacheable, so consuming apps can render the note HTML as-is and the images load.
+
 ## Querying release notes from your app
 
 Send the application's API key in the `X-Api-Key` header. Only published notes are returned, newest version first.

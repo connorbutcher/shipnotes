@@ -1,6 +1,8 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using ShipNotes.Application.Applications;
+using ShipNotes.Application.Media;
 using ShipNotes.Application.ReleaseNotes;
 
 namespace ShipNotes.Tests.Integration;
@@ -26,6 +28,30 @@ internal static class ApiClientExtensions
             new SaveReleaseNoteRequest(version, $"Release {version}", content, isPublished));
         response.IsSuccessStatusCode.Should().BeTrue(await response.Content.ReadAsStringAsync());
         return (await response.Content.ReadFromJsonAsync<ReleaseNoteDto>())!;
+    }
+
+    /// <summary>The smallest valid PNG: a 1x1 transparent pixel.</summary>
+    public static readonly byte[] TinyPng = Convert.FromBase64String(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=");
+
+    public static Task<HttpResponseMessage> PostMediaAsync(
+        this HttpClient client,
+        Guid applicationId,
+        byte[] bytes,
+        string fileName = "Screen Shot.png",
+        string contentType = "image/png")
+    {
+        var file = new ByteArrayContent(bytes);
+        file.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        var form = new MultipartFormDataContent { { file, "file", fileName } };
+        return client.PostAsync($"/api/v1/applications/{applicationId}/media", form);
+    }
+
+    public static async Task<MediaDto> UploadImageAsync(this HttpClient client, Guid applicationId)
+    {
+        var response = await client.PostMediaAsync(applicationId, TinyPng);
+        response.IsSuccessStatusCode.Should().BeTrue(await response.Content.ReadAsStringAsync());
+        return (await response.Content.ReadFromJsonAsync<MediaDto>())!;
     }
 
     public static HttpRequestMessage WithApiKey(this HttpRequestMessage request, string apiKey)

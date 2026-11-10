@@ -17,6 +17,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
 import { isPreRelease, semverValidator } from '../../../../shared/validators/semver.validator';
 import { normalizeEditorHtml } from '../../../../shared/utils/editor-html';
+import { ImageUploader } from '../rich-text-editor/editor-image-upload';
 import { RichTextEditor } from '../rich-text-editor/rich-text-editor';
 
 const TITLE_MAX_LENGTH = 200;
@@ -43,6 +44,7 @@ export class ReleaseNoteForm {
 
   readonly releaseNote = input<ReleaseNote | null>(null);
   readonly saving = input(false);
+  readonly uploadImage = input<ImageUploader | null>(null);
   readonly saved = output<SaveReleaseNoteRequest>();
 
   protected readonly titleMaxLength = TITLE_MAX_LENGTH;

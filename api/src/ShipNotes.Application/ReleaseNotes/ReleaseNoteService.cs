@@ -1,6 +1,7 @@
 using FluentValidation;
 using ShipNotes.Application.Abstractions;
 using ShipNotes.Application.Common.Exceptions;
+using ShipNotes.Application.Media;
 using ShipNotes.Domain.ReleaseNotes;
 using ShipNotes.Domain.Versioning;
 
@@ -9,7 +10,7 @@ namespace ShipNotes.Application.ReleaseNotes;
 internal sealed class ReleaseNoteService(
     IClientApplicationRepository applications,
     IReleaseNoteRepository releaseNotes,
-    IHtmlContentSanitizer sanitizer,
+    IReleaseNoteMediaService noteMedia,
     IUnitOfWork unitOfWork,
     IValidator<SaveReleaseNoteRequest> validator,
     TimeProvider clock) : IReleaseNoteService
@@ -35,10 +36,12 @@ internal sealed class ReleaseNoteService(
         await EnsureVersionIsUniqueAsync(applicationId, version, null, cancellationToken);
 
         var now = clock.GetUtcNow();
-        var note = ReleaseNote.Create(applicationId, version, request.Title, sanitizer.Sanitize(request.ContentHtml), now);
+        var content = await noteMedia.PrepareContentAsync(applicationId, releaseNoteId: null, request.ContentHtml, cancellationToken);
+        var note = ReleaseNote.Create(applicationId, version, request.Title, content.Html, now);
         ApplyPublishState(note, request.IsPublished, now);
 
         releaseNotes.Add(note);
+        await noteMedia.SyncAsync(note, content, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return note.ToDto();
@@ -53,10 +56,13 @@ internal sealed class ReleaseNoteService(
         await EnsureVersionIsUniqueAsync(applicationId, version, id, cancellationToken);
 
         var now = clock.GetUtcNow();
-        note.Update(version, request.Title, sanitizer.Sanitize(request.ContentHtml), now);
+        var content = await noteMedia.PrepareContentAsync(applicationId, note.Id, request.ContentHtml, cancellationToken);
+        note.Update(version, request.Title, content.Html, now);
         ApplyPublishState(note, request.IsPublished, now);
 
+        var removedMedia = await noteMedia.SyncAsync(note, content, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        noteMedia.DeleteFiles(removedMedia);
 
         return note.ToDto();
     }
@@ -64,8 +70,10 @@ internal sealed class ReleaseNoteService(
     public async Task DeleteAsync(Guid applicationId, Guid id, CancellationToken cancellationToken)
     {
         var note = await GetEntityAsync(applicationId, id, cancellationToken);
+        var removedMedia = await noteMedia.DetachAllAsync(note.Id, cancellationToken);
         releaseNotes.Remove(note);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        noteMedia.DeleteFiles(removedMedia);
     }
 
     private static void ApplyPublishState(ReleaseNote note, bool isPublished, DateTimeOffset now)

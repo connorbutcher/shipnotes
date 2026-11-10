@@ -32,6 +32,7 @@
     <app-release-note-form
       [releaseNote]="note.value() ?? null"
       [saving]="saving()"
+      [uploadImage]="uploadImage()"
       (saved)="save($event)"
     />
   </p-card>
