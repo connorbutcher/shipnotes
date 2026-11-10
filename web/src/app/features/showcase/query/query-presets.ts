@@ -1,3 +1,4 @@
+import { ReleaseNoteCategory } from '../../../core/models/release-note-category';
 import { QueryRequest } from './query-request';
 
 /** A ready-made question a consuming app might ask, applied to the console in one click. */
@@ -61,6 +62,20 @@ export const QUERY_PRESETS: readonly QueryPreset[] = [
     },
   },
   {
+    id: 'security-upgrade',
+    label: 'Security fixes from 1.0.0 to 2.0.0',
+    icon: 'pi pi-lock-open',
+    expectedStatus: 200,
+    request: { endpoint: 'between', from: '1.0.0', to: '2.0.0', categories: ['security'] },
+  },
+  {
+    id: 'latest-breaking',
+    label: 'Latest breaking change',
+    icon: 'pi pi-exclamation-triangle',
+    expectedStatus: 200,
+    request: { endpoint: 'latest', categories: ['breaking'] },
+  },
+  {
     id: 'app-details',
     label: 'Application details',
     icon: 'pi pi-box',
@@ -80,6 +95,13 @@ export const QUERY_PRESETS: readonly QueryPreset[] = [
     icon: 'pi pi-lock',
     expectedStatus: 401,
     request: { endpoint: 'latest', sendApiKey: false },
+  },
+  {
+    id: 'bad-category',
+    label: 'Unknown category (400)',
+    icon: 'pi pi-question-circle',
+    expectedStatus: 400,
+    request: { endpoint: 'list', categories: ['bugs' as ReleaseNoteCategory] },
   },
   {
     id: 'bad-range',
