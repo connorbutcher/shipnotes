@@ -84,7 +84,7 @@ public sealed class MediaApiTests : IDisposable
         var media = await client.UploadImageAsync(app.Application.Id);
         await client.CreateReleaseNoteAsync(app.Application.Id, "1.0.0", content: $"<p><img src=\"{media.Url}\"></p>");
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/public/release-notes/latest").WithApiKey(app.ApiKey);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/api/v1/public/applications/{app.Application.Id}/release-notes/latest").WithApiKey(app.ApiKey);
         var latest = await (await client.SendAsync(request)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>();
 
         latest!.ContentHtml.Should().Contain(media.Url);

@@ -52,8 +52,8 @@ public sealed class ApplicationsApiTests : IDisposable
         var regenerated = (await response.Content.ReadFromJsonAsync<ApplicationWithApiKeyDto>())!;
 
         regenerated.ApiKey.Should().NotBe(created.ApiKey);
-        (await SendPublicAsync(created.ApiKey)).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        (await SendPublicAsync(regenerated.ApiKey)).StatusCode.Should().Be(HttpStatusCode.OK);
+        (await SendPublicAsync(created.Application.Id, created.ApiKey)).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        (await SendPublicAsync(created.Application.Id, regenerated.ApiKey)).StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -71,6 +71,6 @@ public sealed class ApplicationsApiTests : IDisposable
         factory.Dispose();
     }
 
-    private Task<HttpResponseMessage> SendPublicAsync(string apiKey) =>
-        client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/api/v1/public/application").WithApiKey(apiKey));
+    private Task<HttpResponseMessage> SendPublicAsync(Guid applicationId, string apiKey) =>
+        client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"/api/v1/public/applications/{applicationId}").WithApiKey(apiKey));
 }

@@ -7,6 +7,8 @@ public interface IPublicReleaseNoteService
 
     Task<IReadOnlyList<PublicReleaseNoteDto>> ListAsync(Guid applicationId, PublicReleaseNotesQuery query, CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<PublicReleaseNoteDto>> ListBetweenAsync(Guid applicationId, PublicReleaseNotesRangeQuery query, CancellationToken cancellationToken);
+
     Task<PublicReleaseNoteDto> GetLatestAsync(Guid applicationId, bool includePreReleases, CancellationToken cancellationToken);
 
     Task<PublicReleaseNoteDto> GetByVersionAsync(Guid applicationId, string version, CancellationToken cancellationToken);

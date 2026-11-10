@@ -9,7 +9,8 @@ namespace ShipNotes.Application.PublicApi;
 internal sealed class PublicReleaseNoteService(
     IClientApplicationRepository applications,
     IReleaseNoteRepository releaseNotes,
-    IValidator<PublicReleaseNotesQuery> validator) : IPublicReleaseNoteService
+    IValidator<PublicReleaseNotesQuery> validator,
+    IValidator<PublicReleaseNotesRangeQuery> rangeValidator) : IPublicReleaseNoteService
 {
     public async Task<PublicApplicationDto> GetApplicationAsync(Guid applicationId, CancellationToken cancellationToken)
     {
@@ -34,6 +35,27 @@ internal sealed class PublicReleaseNoteService(
                 AfterSortKey: ToSortKey(query.After),
                 UpToSortKey: ToSortKey(query.UpTo),
                 Limit: query.Limit),
+            cancellationToken);
+
+        return [.. notes.Select(ToDto)];
+    }
+
+    public async Task<IReadOnlyList<PublicReleaseNoteDto>> ListBetweenAsync(
+        Guid applicationId,
+        PublicReleaseNotesRangeQuery query,
+        CancellationToken cancellationToken)
+    {
+        await rangeValidator.ValidateAndThrowAsync(query, cancellationToken);
+
+        var from = ToSortKey(query.From);
+        var notes = await releaseNotes.ListAsync(
+            new ReleaseNoteQuery(
+                applicationId,
+                PublishedOnly: true,
+                query.IncludePreReleases,
+                AfterSortKey: query.IncludeFrom ? null : from,
+                FromSortKey: query.IncludeFrom ? from : null,
+                UpToSortKey: ToSortKey(query.To)),
             cancellationToken);
 
         return [.. notes.Select(ToDto)];

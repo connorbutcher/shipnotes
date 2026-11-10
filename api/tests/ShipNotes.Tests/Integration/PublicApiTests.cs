@@ -12,21 +12,49 @@ public sealed class PublicApiTests : IDisposable
 
     public PublicApiTests() => client = factory.CreateClient();
 
-    [Fact]
-    public async Task Requests_without_a_valid_key_are_rejected()
+    public static TheoryData<string> PublicPaths =>
+    [
+        "",
+        "/release-notes",
+        "/release-notes/latest",
+        "/release-notes/1.0.0",
+        "/release-notes/between?from=1.0.0&to=2.0.0",
+    ];
+
+    [Theory]
+    [MemberData(nameof(PublicPaths))]
+    public async Task Every_public_endpoint_requires_a_valid_key(string path)
     {
-        (await client.GetAsync("/api/v1/public/release-notes")).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        (await GetAsync("/api/v1/public/release-notes", "sn_wrong")).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        var app = await SeedAsync();
+        var url = $"/api/v1/public/applications/{app.Id}{path}";
+
+        (await client.GetAsync(url)).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        (await GetAsync(url, "sn_wrong")).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        (await GetAsync(url, app.ApiKey)).StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Theory]
+    [MemberData(nameof(PublicPaths))]
+    public async Task Every_public_endpoint_rejects_a_key_for_another_application(string path)
+    {
+        var app = await SeedAsync();
+        var other = await client.CreateApplicationAsync("Other");
+
+        var wrongApp = await GetAsync($"/api/v1/public/applications/{app.Id}{path}", other.ApiKey);
+        var unknownApp = await GetAsync($"/api/v1/public/applications/{Guid.NewGuid()}{path}", app.ApiKey);
+
+        wrongApp.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        unknownApp.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
-    public async Task Only_published_stable_notes_of_the_calling_application_are_returned_by_default()
+    public async Task Only_published_stable_notes_of_the_application_are_returned_by_default()
     {
         var app = await SeedAsync();
         var other = await client.CreateApplicationAsync("Other");
         await client.CreateReleaseNoteAsync(other.Application.Id, "9.0.0");
 
-        var notes = await GetNotesAsync("/api/v1/public/release-notes", app);
+        var notes = await GetNotesAsync(app, "/release-notes");
 
         notes.Select(n => n.Version).Should().Equal("2.0.0", "1.1.0", "1.0.0");
     }
@@ -36,7 +64,7 @@ public sealed class PublicApiTests : IDisposable
     {
         var app = await SeedAsync();
 
-        var notes = await GetNotesAsync("/api/v1/public/release-notes?includePreReleases=true", app);
+        var notes = await GetNotesAsync(app, "/release-notes?includePreReleases=true");
 
         notes.Select(n => n.Version).Should().Equal("2.1.0-beta.1", "2.0.0", "1.1.0", "1.0.0");
     }
@@ -46,30 +74,74 @@ public sealed class PublicApiTests : IDisposable
     {
         var app = await SeedAsync();
 
-        var range = await GetNotesAsync("/api/v1/public/release-notes?after=1.0.0&upTo=2.0.0", app);
-        var limited = await GetNotesAsync("/api/v1/public/release-notes?limit=1", app);
+        var range = await GetNotesAsync(app, "/release-notes?after=1.0.0&upTo=2.0.0");
+        var limited = await GetNotesAsync(app, "/release-notes?limit=1");
 
         range.Select(n => n.Version).Should().Equal("2.0.0", "1.1.0");
         limited.Select(n => n.Version).Should().Equal("2.0.0");
     }
 
     [Fact]
-    public async Task Invalid_query_values_are_rejected()
+    public async Task Between_excludes_from_and_includes_to()
     {
         var app = await SeedAsync();
 
-        (await GetAsync("/api/v1/public/release-notes?after=latest", app)).StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        (await GetAsync("/api/v1/public/release-notes?limit=500", app)).StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var notes = await GetNotesAsync(app, "/release-notes/between?from=1.0.0&to=2.0.0");
+
+        notes.Select(n => n.Version).Should().Equal("2.0.0", "1.1.0");
+    }
+
+    [Fact]
+    public async Task Between_can_include_from_and_pre_releases()
+    {
+        var app = await SeedAsync();
+
+        var inclusive = await GetNotesAsync(app, "/release-notes/between?from=1.0.0&to=1.1.0&includeFrom=true");
+        var withPreReleases = await GetNotesAsync(app, "/release-notes/between?from=2.0.0&to=3.0.0&includePreReleases=true");
+
+        inclusive.Select(n => n.Version).Should().Equal("1.1.0", "1.0.0");
+        withPreReleases.Select(n => n.Version).Should().Equal("2.1.0-beta.1");
+    }
+
+    [Fact]
+    public async Task Between_orders_by_semver_precedence_not_text()
+    {
+        var app = await client.CreateApplicationAsync("Semver");
+        foreach (var version in new[] { "1.2.0", "1.9.0", "1.10.0", "1.11.0", "2.0.0-rc.1", "2.0.0" })
+        {
+            await client.CreateReleaseNoteAsync(app.Application.Id, version);
+        }
+
+        var seeded = new SeededApp(app.Application.Id, app.ApiKey);
+        var notes = await GetNotesAsync(seeded, "/release-notes/between?from=1.9.0&to=2.0.0&includePreReleases=true");
+
+        notes.Select(n => n.Version).Should().Equal("2.0.0", "2.0.0-rc.1", "1.11.0", "1.10.0");
+    }
+
+    [Theory]
+    [InlineData("/release-notes/between?to=2.0.0")]
+    [InlineData("/release-notes/between?from=1.0.0")]
+    [InlineData("/release-notes/between?from=one&to=2.0.0")]
+    [InlineData("/release-notes/between?from=2.0.0&to=1.10.0")]
+    [InlineData("/release-notes?after=latest")]
+    [InlineData("/release-notes?limit=500")]
+    public async Task Invalid_query_values_are_rejected(string path)
+    {
+        var app = await SeedAsync();
+
+        (await GetAsync($"/api/v1/public/applications/{app.Id}{path}", app.ApiKey)).StatusCode
+            .Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task Latest_and_by_version_endpoints_return_single_notes()
     {
         var app = await SeedAsync();
+        var baseUrl = $"/api/v1/public/applications/{app.Id}/release-notes";
 
-        var latest = await (await GetAsync("/api/v1/public/release-notes/latest", app)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>();
-        var byVersion = await (await GetAsync("/api/v1/public/release-notes/1.1.0", app)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>();
-        var draft = await GetAsync("/api/v1/public/release-notes/3.0.0", app);
+        var latest = await (await GetAsync($"{baseUrl}/latest", app.ApiKey)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>();
+        var byVersion = await (await GetAsync($"{baseUrl}/1.1.0", app.ApiKey)).Content.ReadFromJsonAsync<PublicReleaseNoteDto>();
+        var draft = await GetAsync($"{baseUrl}/3.0.0", app.ApiKey);
 
         latest!.Version.Should().Be("2.0.0");
         byVersion!.Title.Should().Be("Release 1.1.0");
@@ -77,11 +149,11 @@ public sealed class PublicApiTests : IDisposable
     }
 
     [Fact]
-    public async Task Application_details_are_returned_for_the_key()
+    public async Task Application_details_are_returned()
     {
         var app = await SeedAsync();
 
-        var details = await (await GetAsync("/api/v1/public/application", app)).Content.ReadFromJsonAsync<PublicApplicationDto>();
+        var details = await (await GetAsync($"/api/v1/public/applications/{app.Id}", app.ApiKey)).Content.ReadFromJsonAsync<PublicApplicationDto>();
 
         details!.Name.Should().Be("Portal");
     }
@@ -92,7 +164,9 @@ public sealed class PublicApiTests : IDisposable
         factory.Dispose();
     }
 
-    private async Task<string> SeedAsync()
+    private sealed record SeededApp(Guid Id, string ApiKey);
+
+    private async Task<SeededApp> SeedAsync()
     {
         var app = await client.CreateApplicationAsync("Portal");
         var id = app.Application.Id;
@@ -101,15 +175,15 @@ public sealed class PublicApiTests : IDisposable
         await client.CreateReleaseNoteAsync(id, "2.0.0");
         await client.CreateReleaseNoteAsync(id, "2.1.0-beta.1");
         await client.CreateReleaseNoteAsync(id, "3.0.0", isPublished: false);
-        return app.ApiKey;
+        return new SeededApp(id, app.ApiKey);
     }
 
     private Task<HttpResponseMessage> GetAsync(string url, string apiKey) =>
         client.SendAsync(new HttpRequestMessage(HttpMethod.Get, url).WithApiKey(apiKey));
 
-    private async Task<List<PublicReleaseNoteDto>> GetNotesAsync(string url, string apiKey)
+    private async Task<List<PublicReleaseNoteDto>> GetNotesAsync(SeededApp app, string path)
     {
-        var response = await GetAsync(url, apiKey);
+        var response = await GetAsync($"/api/v1/public/applications/{app.Id}{path}", app.ApiKey);
         response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         return (await response.Content.ReadFromJsonAsync<List<PublicReleaseNoteDto>>())!;
     }

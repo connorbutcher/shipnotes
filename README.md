@@ -46,19 +46,29 @@ Images are never stored inline in a note. The editor's image button (and pasting
 
 ## Querying release notes from your app
 
-Send the application's API key in the `X-Api-Key` header. Only published notes are returned, newest version first.
+Every request must send the application's API key in the `X-Api-Key` header, and the URL names the application the key was issued to. The key is checked against that application on every call:
+
+- no key, or an unknown key: `401 Unauthorized`
+- a valid key for a different application (or an application id that doesn't exist): `403 Forbidden`
+
+The application id is shown on the application's **Integration** tab. Only published notes are returned, newest version first. Paths below are relative to `/api/v1/public/applications/{applicationId}`.
 
 | Endpoint | Description |
 | --- | --- |
-| `GET /api/v1/public/release-notes` | List notes. Query: `after` (exclusive), `upTo` (inclusive), `includePreReleases` (default `false`), `limit` (1–100, default 20). |
-| `GET /api/v1/public/release-notes/latest` | Newest published note. Query: `includePreReleases`. |
-| `GET /api/v1/public/release-notes/{version}` | Note for one version, e.g. `1.4.0`. |
-| `GET /api/v1/public/application` | Application name and icon URL. |
+| `GET /release-notes` | List notes. Query: `after` (exclusive), `upTo` (inclusive), `includePreReleases` (default `false`), `limit` (1–100, default 20). |
+| `GET /release-notes/between` | All notes between two versions. Query: `from` (required, exclusive), `to` (required, inclusive), `includeFrom` (default `false`; set `true` to include `from` itself), `includePreReleases` (default `false`). Returns `400` if `from` is later than `to`. |
+| `GET /release-notes/latest` | Newest published note. Query: `includePreReleases`. |
+| `GET /release-notes/{version}` | Note for one version, e.g. `1.4.0`. |
+| `GET /` | Application name and icon URL. |
+
+Versions are compared by [semver precedence](https://semver.org/#spec-item-11), not as text: `1.10.0` is after `1.9.0`, `2.0.0-beta.1` is before `2.0.0`, and build metadata (`+build.5`) is ignored.
+
+`between` excludes `from` and includes `to` because the usual question is "the user had 1.2.0 and now has 1.5.0, what changed?": they already saw 1.2.0's notes, and 1.5.0's notes are part of the answer.
 
 ```bash
-# "What's new since the version this user last saw?"
+# "What changed between the version this user last saw and the one they have now?"
 curl -H "X-Api-Key: $SHIPNOTES_API_KEY" \
-  "https://your-shipnotes-host/api/v1/public/release-notes?after=1.2.0&upTo=1.5.0"
+  "https://your-shipnotes-host/api/v1/public/applications/$SHIPNOTES_APP_ID/release-notes/between?from=1.2.0&to=1.5.0"
 ```
 
 ```json

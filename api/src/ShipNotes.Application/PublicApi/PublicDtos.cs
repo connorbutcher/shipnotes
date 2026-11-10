@@ -21,3 +21,14 @@ public sealed record PublicReleaseNotesQuery(
     public const int DefaultLimit = 20;
     public const int MaxLimit = 100;
 }
+
+/// <summary>
+/// A version range for "what changed between the version I had and the version I have now".
+/// <paramref name="From"/> is exclusive unless <paramref name="IncludeFrom"/> is set; <paramref name="To"/> is inclusive.
+/// Versions are compared by semver precedence (1.10.0 is after 1.9.0; 2.0.0-beta.1 is before 2.0.0).
+/// </summary>
+public sealed record PublicReleaseNotesRangeQuery(
+    string? From = null,
+    string? To = null,
+    bool IncludeFrom = false,
+    bool IncludePreReleases = false);
