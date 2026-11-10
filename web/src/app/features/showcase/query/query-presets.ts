@@ -48,6 +48,19 @@ export const QUERY_PRESETS: readonly QueryPreset[] = [
     request: { endpoint: 'list', limit: 3, includePreReleases: false, after: '', upTo: '' },
   },
   {
+    id: 'security-and-breaking',
+    label: 'Only breaking and security changes',
+    icon: 'pi pi-shield',
+    expectedStatus: 200,
+    request: {
+      endpoint: 'list',
+      categories: ['breaking', 'security'],
+      after: '',
+      upTo: '',
+      limit: null,
+    },
+  },
+  {
     id: 'app-details',
     label: 'Application details',
     icon: 'pi pi-box',
@@ -79,5 +92,11 @@ export const QUERY_PRESETS: readonly QueryPreset[] = [
 
 /** Applies a preset on top of the defaults, so options from an earlier query don't leak in. */
 export function applyPreset(base: QueryRequest, preset: QueryPreset): QueryRequest {
-  return { ...base, sendApiKey: true, includePreReleases: false, ...preset.request };
+  return {
+    ...base,
+    sendApiKey: true,
+    includePreReleases: false,
+    categories: [],
+    ...preset.request,
+  };
 }

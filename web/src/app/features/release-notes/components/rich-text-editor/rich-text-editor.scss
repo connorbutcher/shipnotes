@@ -15,6 +15,10 @@
   font-size: var(--font-size-base);
 }
 
+:host(.compact) ::ng-deep .ql-container {
+  min-height: var(--editor-compact-min-height);
+}
+
 quill-editor {
   display: block;
   width: 100%;

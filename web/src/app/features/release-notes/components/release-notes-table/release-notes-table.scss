@@ -28,3 +28,9 @@
   gap: var(--space-1-5);
   white-space: nowrap;
 }
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}

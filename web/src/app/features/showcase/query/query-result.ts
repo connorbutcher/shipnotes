@@ -23,9 +23,7 @@ export type RenderedView =
   | { kind: 'empty' };
 
 function isNote(value: unknown): value is PublicReleaseNote {
-  return (
-    typeof value === 'object' && value !== null && 'contentHtml' in value && 'version' in value
-  );
+  return typeof value === 'object' && value !== null && 'sections' in value && 'version' in value;
 }
 
 function isApplication(value: unknown): value is PublicApplication {
