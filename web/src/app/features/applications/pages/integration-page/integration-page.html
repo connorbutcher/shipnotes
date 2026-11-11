@@ -34,38 +34,6 @@
   </p-table>
 </p-card>
 
-<p-card header="Categories">
-  <div class="d-flex flex-col gap-3">
-    <p class="text-muted">
-      Each note has an optional summary and one section per category of change, returned in
-      <code>sections</code> in this order. Pass <code>category</code> (repeated, or comma-separated
-      like <code>?category=breaking,security</code>) to get only notes with those categories, and
-      only those sections of them. <code>contentHtml</code> still holds the whole note as one
-      fragment, each section in
-      <code>&lt;section class="note-section note-section--fixed" data-category="fixed"&gt;</code>
-      (with the category's value), so you can style each kind of change with CSS.
-    </p>
-    <p-table [value]="categories" size="small">
-      <ng-template #header>
-        <tr>
-          <th scope="col">Category</th>
-          <th scope="col">Value</th>
-          <th scope="col">Use for</th>
-        </tr>
-      </ng-template>
-      <ng-template #body let-category>
-        <tr>
-          <td><app-category-tag [category]="category.value" /></td>
-          <td>
-            <code>{{ category.value }}</code>
-          </td>
-          <td class="text-muted">{{ category.description }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-</p-card>
-
 <p-card header="Examples">
   <p-tabs [value]="snippets()[0].title">
     <p-tablist>

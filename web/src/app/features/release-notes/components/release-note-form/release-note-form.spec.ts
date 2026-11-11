@@ -45,11 +45,15 @@ describe('ReleaseNoteForm', () => {
     type('title', ' Faster ');
     submit();
     expect(saved).toEqual([
-      { version: '1.2.0', title: 'Faster', summaryHtml: '', sections: [], isPublished: false },
+      { version: '1.2.0', title: 'Faster', contentHtml: '', isPublished: false },
     ]);
   });
 
   it('loads an existing note into one editor, with a block per section', async () => {
+    const html =
+      '<p>Intro</p>' +
+      '<section class="note-section note-section--breaking"><h2 class="note-section__title">Breaking changes</h2><p>B</p></section>' +
+      '<section class="note-section note-section--fixed"><h2 class="note-section__title">Fixed</h2><p>F</p></section>';
     const fixture = TestBed.createComponent(ReleaseNoteForm);
     const saved: SaveReleaseNoteRequest[] = [];
     fixture.componentInstance.saved.subscribe((value) => saved.push(value));
@@ -59,11 +63,7 @@ describe('ReleaseNoteForm', () => {
       version: '2.0.0',
       isPreRelease: false,
       title: 'Big',
-      summaryHtml: '<p>Intro</p>',
-      sections: [
-        { category: 'breaking', contentHtml: '<p>B</p>' },
-        { category: 'fixed', contentHtml: '<p>F</p>' },
-      ],
+      contentHtml: html,
       isPublished: true,
       publishedAt: null,
       createdAt: '',
@@ -82,13 +82,7 @@ describe('ReleaseNoteForm', () => {
     ]);
 
     element.querySelector('form')!.dispatchEvent(new Event('submit'));
-    expect(saved[0]).toMatchObject({
-      summaryHtml: '<p>Intro</p>',
-      sections: [
-        { category: 'breaking', contentHtml: '<p>B</p>' },
-        { category: 'fixed', contentHtml: '<p>F</p>' },
-      ],
-    });
+    expect(saved[0].contentHtml).toBe(html);
   });
 
   it('offers every category in the toolbar section picker', async () => {
@@ -97,7 +91,7 @@ describe('ReleaseNoteForm', () => {
 
     const options = [...element.querySelectorAll('select.ql-category option')];
     expect(options.map((o) => o.textContent?.trim())).toEqual([
-      'Summary',
+      'No section',
       'Breaking changes',
       'Added',
       'Changed',
@@ -115,8 +109,7 @@ describe('ReleaseNoteForm', () => {
     expect(drafts.at(-1)).toEqual({
       version: '1.3.0',
       title: 'Dark mode',
-      summaryHtml: '',
-      sections: [],
+      contentHtml: '',
       isPublished: false,
     });
   });

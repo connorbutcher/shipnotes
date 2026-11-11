@@ -176,3 +176,55 @@ END;
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261111200953_StoreReleaseNotesAsOneDocument'
+)
+BEGIN
+    EXEC sp_rename N'[ReleaseNotes].[SummaryHtml]', N'ContentHtml', 'COLUMN';
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261111200953_StoreReleaseNotesAsOneDocument'
+)
+BEGIN
+    UPDATE n
+    SET ContentHtml = n.ContentHtml + s.Html
+    FROM ReleaseNotes AS n
+    CROSS APPLY (
+        SELECT STRING_AGG(
+            CAST(N'<section class="note-section note-section--' + LOWER(x.Category) + N'">'
+                + N'<h2 class="note-section__title">'
+                + CASE x.Category WHEN 'Breaking' THEN N'Breaking changes' ELSE CAST(x.Category AS nvarchar(20)) END
+                + N'</h2>' + x.ContentHtml + N'</section>' AS nvarchar(max)),
+            N'') WITHIN GROUP (ORDER BY CASE x.Category
+                WHEN 'Breaking' THEN 0 WHEN 'Added' THEN 1 WHEN 'Changed' THEN 2 WHEN 'Deprecated' THEN 3
+                WHEN 'Removed' THEN 4 WHEN 'Fixed' THEN 5 WHEN 'Security' THEN 6 ELSE 7 END) AS Html
+        FROM ReleaseNoteSections AS x
+        WHERE x.ReleaseNoteId = n.Id
+    ) AS s
+    WHERE s.Html IS NOT NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261111200953_StoreReleaseNotesAsOneDocument'
+)
+BEGIN
+    DROP TABLE [ReleaseNoteSections];
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261111200953_StoreReleaseNotesAsOneDocument'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261111200953_StoreReleaseNotesAsOneDocument', N'10.0.14');
+END;
+
+COMMIT;
+GO
+

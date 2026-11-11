@@ -15,6 +15,15 @@ public sealed class HtmlContentSanitizerTests
         sanitizer.Sanitize(html).Should().Be(html);
     }
 
+    [Fact]
+    public void Keeps_sections_and_their_classes_as_written()
+    {
+        const string html =
+            "<p>Intro</p><section class=\"note-section note-section--fixed\"><h2 class=\"note-section__title\">Fixed</h2><p>Crash</p></section>";
+
+        sanitizer.Sanitize(html).Should().Be(html);
+    }
+
     [Theory]
     [InlineData("<p>Hi</p><script>alert(1)</script>", "<p>Hi</p>")]
     [InlineData("<p onclick=\"alert(1)\">Hi</p>", "<p>Hi</p>")]

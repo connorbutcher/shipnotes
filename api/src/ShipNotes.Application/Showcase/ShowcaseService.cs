@@ -82,17 +82,10 @@ internal sealed partial class ShowcaseService(
 
         foreach (var note in ShowcaseCatalog.Notes)
         {
-            var content = ShowcaseContent.ReadNote(note.Version);
-            var summary = await ResolveMediaAsync(content.SummaryHtml, cancellationToken);
-            var sections = new List<ReleaseNoteSectionDto>();
-            foreach (var section in content.Sections)
-            {
-                sections.Add(new ReleaseNoteSectionDto(section.Category, await ResolveMediaAsync(section.ContentHtml, cancellationToken)));
-            }
-
+            var html = await ResolveMediaAsync(ShowcaseContent.ReadNote(note.ContentFile), cancellationToken);
             await releaseNoteService.CreateAsync(
                 DemoId,
-                new SaveReleaseNoteRequest(note.Version, note.Title, summary, sections, note.IsPublished),
+                new SaveReleaseNoteRequest(note.Version, note.Title, html, note.IsPublished),
                 cancellationToken);
         }
 

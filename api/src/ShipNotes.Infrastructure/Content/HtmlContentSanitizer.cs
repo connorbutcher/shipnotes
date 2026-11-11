@@ -10,7 +10,7 @@ internal sealed class HtmlContentSanitizer : IHtmlContentSanitizer
     private static readonly string[] AllowedTags =
     [
         "p", "br", "h1", "h2", "h3", "h4", "strong", "b", "em", "i", "u", "s",
-        "blockquote", "pre", "code", "ol", "ul", "li", "a", "img", "span",
+        "blockquote", "pre", "code", "ol", "ul", "li", "a", "img", "span", "section",
     ];
 
     private static readonly string[] AllowedAttributes = ["href", "src", "alt", "title", "target", "rel", "class", "data-list"];

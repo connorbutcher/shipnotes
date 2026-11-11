@@ -7,15 +7,10 @@ namespace ShipNotes.Application.Media;
 internal interface IReleaseNoteMediaService
 {
     /// <summary>
-    /// Sanitises the note's summary and section HTML, keeping only images that are media uploaded to this application
+    /// Sanitises note HTML, keeping only images that are media uploaded to this application
     /// (and not already used by another note; pass null for a new note), with their links rewritten to the canonical URL.
-    /// Sections left without any content are dropped.
     /// </summary>
-    Task<NoteContent> PrepareContentAsync(
-        Guid applicationId,
-        Guid? releaseNoteId,
-        ReleaseNoteContent content,
-        CancellationToken cancellationToken);
+    Task<NoteContent> PrepareContentAsync(Guid applicationId, Guid? releaseNoteId, string html, CancellationToken cancellationToken);
 
     /// <summary>
     /// Attaches the media the note now uses and removes the records of media it no longer uses.
@@ -29,4 +24,4 @@ internal interface IReleaseNoteMediaService
     void DeleteFiles(IEnumerable<MediaData> media);
 }
 
-internal sealed record NoteContent(ReleaseNoteContent Content, IReadOnlyList<MediaData> Media);
+internal sealed record NoteContent(string Html, IReadOnlyList<MediaData> Media);

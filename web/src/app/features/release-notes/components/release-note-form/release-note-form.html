@@ -43,11 +43,11 @@
   <div class="field" role="group" aria-labelledby="note-content-label">
     <span id="note-content-label" class="label">Release notes</span>
     <p class="hint text-muted text-sm">
-      Start with a summary, then pick a section such as Added or Fixed from the toolbar to group
-      changes by kind. Apps can filter by section and style each one by its class.
+      Pick a section such as Added or Fixed from the toolbar to group changes by kind. Each section
+      is saved with its own class, so apps can style it.
     </p>
     <app-rich-text-editor
-      formControlName="content"
+      formControlName="contentHtml"
       [uploadImage]="uploadImage()"
       placeholder="Introduce the release, then add sections for what was added, changed or fixed…"
     />

@@ -1,39 +1,22 @@
-import { ReleaseNoteCategory } from './release-note-category';
-
 export interface ReleaseNoteSummary {
   id: string;
   version: string;
   isPreRelease: boolean;
   title: string;
-  /** Categories the note has sections for, in display order. */
-  categories: ReleaseNoteCategory[];
   isPublished: boolean;
   publishedAt: string | null;
   updatedAt: string;
 }
 
-/** The rich text for one category of change, e.g. everything that was fixed. */
-export interface ReleaseNoteSection {
-  category: ReleaseNoteCategory;
-  contentHtml: string;
-}
-
-export interface ReleaseNote extends Omit<ReleaseNoteSummary, 'categories'> {
+export interface ReleaseNote extends ReleaseNoteSummary {
   applicationId: string;
-  /** Introductory text shown before the sections; may be empty. */
-  summaryHtml: string;
-  sections: ReleaseNoteSection[];
+  contentHtml: string;
   createdAt: string;
 }
-
-/** What a note says: optional summary text, then at most one section per category. */
-export type ReleaseNoteContent = Pick<ReleaseNote, 'summaryHtml' | 'sections'>;
 
 export interface SaveReleaseNoteRequest {
   version: string;
   title: string;
-  summaryHtml: string;
-  /** At most one per category. Sections left empty are dropped by the API. */
-  sections: ReleaseNoteSection[];
+  contentHtml: string;
   isPublished: boolean;
 }

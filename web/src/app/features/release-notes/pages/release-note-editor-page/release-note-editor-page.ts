@@ -52,8 +52,7 @@ export class ReleaseNoteEditorPage {
   protected readonly draft = signal<SaveReleaseNoteRequest>({
     version: '',
     title: '',
-    summaryHtml: '',
-    sections: [],
+    contentHtml: '',
     isPublished: false,
   });
 
