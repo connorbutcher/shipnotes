@@ -10,7 +10,6 @@
     <tr>
       <th scope="col" class="version-column">Version</th>
       <th scope="col" pSortableColumn="title">Title <p-sorticon field="title" /></th>
-      <th scope="col">Changes</th>
       <th scope="col">Status</th>
       <th scope="col" pSortableColumn="updatedAt">Updated <p-sorticon field="updatedAt" /></th>
     </tr>
@@ -21,15 +20,6 @@
         <a [routerLink]="[note.id]" (click)="$event.stopPropagation()">{{ note.version }}</a>
       </td>
       <td class="title">{{ note.title }}</td>
-      <td>
-        <span class="categories">
-          @for (category of note.categories; track category) {
-            <app-category-tag [category]="category" />
-          } @empty {
-            <span class="text-muted">None</span>
-          }
-        </span>
-      </td>
       <td>
         <span class="tags">
           @if (note.isPreRelease) {

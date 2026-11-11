@@ -4,11 +4,6 @@
   gap: var(--space-4);
 }
 
-// Grid items default to their content's width; let fields shrink to the column instead.
-.options > * {
-  min-width: 0;
-}
-
 .switches {
   display: flex;
   flex-wrap: wrap;

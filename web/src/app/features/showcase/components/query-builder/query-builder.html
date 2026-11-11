@@ -66,13 +66,6 @@
           (valueChange)="patch({ upTo: $event })"
         />
       }
-      @if (has('category')) {
-        <app-category-field
-          inputId="query-category"
-          [value]="request().categories"
-          (valueChange)="patch({ categories: $event })"
-        />
-      }
       @if (has('limit')) {
         <div class="field">
           <label for="query-limit"
@@ -88,7 +81,6 @@
             [ngModel]="request().limit"
             (ngModelChange)="patch({ limit: $event })"
             styleClass="w-full"
-            inputStyleClass="w-full"
           />
         </div>
       }

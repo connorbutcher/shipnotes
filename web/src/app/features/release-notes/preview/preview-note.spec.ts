@@ -1,17 +1,11 @@
-import { SaveReleaseNoteRequest } from '../../../core/models/release-note.model';
 import { hasPreviewContent, toPreviewNote } from './preview-note';
 
 describe('toPreviewNote', () => {
   const now = new Date('2026-11-10T12:00:00Z');
-  const draft: SaveReleaseNoteRequest = {
+  const draft = {
     version: ' 2.0.0-beta.1 ',
     title: ' Dark mode ',
-    summaryHtml: '<p>Hello&nbsp;world</p>',
-    sections: [
-      { category: 'fixed', contentHtml: '<p>Crash on start</p>' },
-      { category: 'added', contentHtml: '<p>Dark mode</p>' },
-      { category: 'security', contentHtml: '<p><br></p>' },
-    ],
+    contentHtml: '<p>Hello&nbsp;world</p>',
     isPublished: false,
   };
 
@@ -20,17 +14,7 @@ describe('toPreviewNote', () => {
       version: '2.0.0-beta.1',
       isPreRelease: true,
       title: 'Dark mode',
-      summaryHtml: '<p>Hello world</p>',
-      sections: [
-        { category: 'added', label: 'Added', contentHtml: '<p>Dark mode</p>' },
-        { category: 'fixed', label: 'Fixed', contentHtml: '<p>Crash on start</p>' },
-      ],
-      contentHtml:
-        '<p>Hello world</p>' +
-        '<section class="note-section note-section--added" data-category="added">' +
-        '<h2 class="note-section__title">Added</h2><p>Dark mode</p></section>' +
-        '<section class="note-section note-section--fixed" data-category="fixed">' +
-        '<h2 class="note-section__title">Fixed</h2><p>Crash on start</p></section>',
+      contentHtml: '<p>Hello world</p>',
       publishedAt: now.toISOString(),
     });
   });
@@ -42,11 +26,7 @@ describe('toPreviewNote', () => {
   });
 
   it('reports an empty draft as having nothing to preview', () => {
-    const empty = toPreviewNote(
-      { ...draft, version: '', title: '', summaryHtml: '', sections: [] },
-      null,
-      now,
-    );
+    const empty = toPreviewNote({ ...draft, version: '', title: '', contentHtml: '' }, null, now);
     expect(hasPreviewContent(empty)).toBe(false);
     expect(hasPreviewContent(toPreviewNote(draft, null, now))).toBe(true);
   });

@@ -1,19 +1,9 @@
-import { ReleaseNoteCategory } from '../../../core/models/release-note-category';
-
 /** The public API endpoints the showcase console can call. */
 export type EndpointId = 'list' | 'between' | 'latest' | 'version' | 'application';
 
 /** A query option shown in the builder when the selected endpoint supports it. */
 export type QueryField =
-  | 'version'
-  | 'from'
-  | 'to'
-  | 'includeFrom'
-  | 'after'
-  | 'upTo'
-  | 'limit'
-  | 'includePreReleases'
-  | 'category';
+  'version' | 'from' | 'to' | 'includeFrom' | 'after' | 'upTo' | 'limit' | 'includePreReleases';
 
 /** Everything the console needs to build one public API request. */
 export interface QueryRequest {
@@ -26,8 +16,6 @@ export interface QueryRequest {
   upTo: string;
   limit: number | null;
   includePreReleases: boolean;
-  /** Only notes with these categories, and only those sections of them. Empty means all. */
-  categories: ReleaseNoteCategory[];
   /** Off sends the request without `X-Api-Key`, to show the 401 response. */
   sendApiKey: boolean;
 }
@@ -45,26 +33,26 @@ export const ENDPOINTS: readonly EndpointDefinition[] = [
     id: 'latest',
     path: '/release-notes/latest',
     description: 'The newest published note, e.g. for a "What\'s new" badge.',
-    fields: ['category', 'includePreReleases'],
+    fields: ['includePreReleases'],
   },
   {
     id: 'version',
     path: '/release-notes/{version}',
     description: 'The note for one exact version.',
-    fields: ['version', 'category'],
+    fields: ['version'],
   },
   {
     id: 'between',
     path: '/release-notes/between',
     description:
       'Everything that changed between two versions: after "from" (unless included) up to and including "to".',
-    fields: ['from', 'to', 'category', 'includeFrom', 'includePreReleases'],
+    fields: ['from', 'to', 'includeFrom', 'includePreReleases'],
   },
   {
     id: 'list',
     path: '/release-notes',
     description: 'Published notes, newest first, optionally filtered and limited.',
-    fields: ['after', 'upTo', 'limit', 'category', 'includePreReleases'],
+    fields: ['after', 'upTo', 'limit', 'includePreReleases'],
   },
   {
     id: 'application',
@@ -84,7 +72,6 @@ export const DEFAULT_QUERY: QueryRequest = {
   upTo: '',
   limit: null,
   includePreReleases: false,
-  categories: [],
   sendApiKey: true,
 };
 
@@ -100,8 +87,7 @@ export function publicBasePath(applicationId: string): string {
 /**
  * The request path and query string relative to the application's public base path,
  * e.g. `/release-notes/between?from=1.1.0&to=2.0.0`. Only options the endpoint supports
- * are sent, and options left at their API default are left out. Categories are sent
- * comma-separated, e.g. `category=breaking,security`.
+ * are sent, and options left at their API default are left out.
  */
 export function buildQueryPath(request: QueryRequest): string {
   const endpoint = endpointById(request.endpoint);
@@ -120,16 +106,12 @@ export function buildQueryPath(request: QueryRequest): string {
   add('includeFrom', request.includeFrom);
   add('limit', request.limit);
   add('includePreReleases', request.includePreReleases);
-  if (fields.has('category') && request.categories.length) {
-    query.set('category', request.categories.join(','));
-  }
 
   const path =
     endpoint.id === 'version'
       ? endpoint.path.replace('{version}', encodeURIComponent(request.version.trim()))
       : endpoint.path;
-  // Category names are plain words, so keep the comma readable instead of %2C.
-  const search = query.toString().replace(/%2C/g, ',');
+  const search = query.toString();
 
   // The application endpoint is the base path itself, so it has no trailing segment.
   const normalizedPath = path === '/' ? '' : path;

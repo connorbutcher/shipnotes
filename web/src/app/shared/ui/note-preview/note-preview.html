@@ -10,12 +10,6 @@
   </time>
 </header>
 <h3>{{ note().title }}</h3>
-@if (note().summaryHtml) {
-  <div class="content" [innerHTML]="note().summaryHtml"></div>
-}
-@for (section of note().sections; track section.category) {
-  <section [attr.data-category]="section.category">
-    <app-category-tag [category]="section.category" />
-    <div class="content" [innerHTML]="section.contentHtml"></div>
-  </section>
+@if (note().contentHtml) {
+  <div class="content" [innerHTML]="note().contentHtml"></div>
 }

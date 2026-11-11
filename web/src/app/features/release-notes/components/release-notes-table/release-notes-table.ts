@@ -4,7 +4,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { ReleaseNoteSummary } from '../../../../core/models/release-note.model';
-import { CategoryTag } from '../../../../shared/ui/category-tag/category-tag';
 
 const PAGE_SIZE = 10;
 
@@ -12,7 +11,7 @@ const PAGE_SIZE = 10;
 @Component({
   selector: 'app-release-notes-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, RouterLink, TableModule, Tag, CategoryTag],
+  imports: [DatePipe, RouterLink, TableModule, Tag],
   templateUrl: './release-notes-table.html',
   styleUrl: './release-notes-table.scss',
 })
