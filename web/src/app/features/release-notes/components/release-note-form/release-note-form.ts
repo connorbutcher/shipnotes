@@ -15,13 +15,9 @@ import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { map, startWith } from 'rxjs';
-import {
-  ReleaseNote,
-  ReleaseNoteContent,
-  SaveReleaseNoteRequest,
-} from '../../../../core/models/release-note.model';
+import { ReleaseNote, SaveReleaseNoteRequest } from '../../../../core/models/release-note.model';
+import { normalizeEditorHtml } from '../../../../shared/utils/editor-html';
 import { isPreRelease, semverValidator } from '../../../../shared/validators/semver.validator';
-import { toContentRequest } from '../../forms/note-content';
 import { ImageUploader } from '../rich-text-editor/editor-image-upload';
 import { RichTextEditor } from '../rich-text-editor/rich-text-editor';
 
@@ -57,7 +53,7 @@ export class ReleaseNoteForm {
   protected readonly form = this.fb.group({
     version: ['', [Validators.required, semverValidator]],
     title: ['', [Validators.required, Validators.maxLength(TITLE_MAX_LENGTH)]],
-    content: [{ summaryHtml: '', sections: [] } as ReleaseNoteContent],
+    contentHtml: [''],
     isPublished: [false],
   });
 
@@ -81,7 +77,7 @@ export class ReleaseNoteForm {
         this.form.reset({
           version: note.version,
           title: note.title,
-          content: { summaryHtml: note.summaryHtml, sections: note.sections },
+          contentHtml: note.contentHtml,
           isPublished: note.isPublished,
         });
       }
@@ -102,7 +98,7 @@ export class ReleaseNoteForm {
     return {
       version: value.version.trim(),
       title: value.title.trim(),
-      ...toContentRequest(value.content),
+      contentHtml: normalizeEditorHtml(value.contentHtml),
       isPublished: value.isPublished,
     };
   }

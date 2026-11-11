@@ -10,17 +10,14 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { QuillEditorComponent, QuillModules } from 'ngx-quill';
 import type Quill from 'quill';
 import { RELEASE_NOTE_CATEGORIES } from '../../../../core/models/release-note-category';
-import { ReleaseNoteContent } from '../../../../core/models/release-note.model';
 import { exitSectionOnEmptyEnter, registerCategoryFormat } from './category-format';
 import { ImageUploader, enableImageUpload } from './editor-image-upload';
-import { readNoteContent, toNoteDelta } from './note-content';
-
-const EMPTY_CONTENT: ReleaseNoteContent = { summaryHtml: '', sections: [] };
+import { readNoteHtml, toNoteDelta } from './note-content';
 
 /**
  * One rich text editor for a whole release note. The toolbar's section picker puts lines in a
- * category section (Added, Fixed…); untagged lines form the summary. The form value is the
- * note's summary and sections, each as semantic HTML.
+ * category section (Added, Fixed…), which the note's HTML wraps in a classed `<section>`.
+ * The form value is the note's HTML.
  */
 @Component({
   selector: 'app-rich-text-editor',
@@ -45,23 +42,23 @@ export class RichTextEditor implements ControlValueAccessor {
   };
 
   private quill: Quill | null = null;
-  private value = EMPTY_CONTENT;
+  private value = '';
   private disabled = false;
-  private onChange: (value: ReleaseNoteContent) => void = () => undefined;
+  private onChange: (value: string) => void = () => undefined;
   private onTouched: () => void = () => undefined;
 
   constructor() {
     registerCategoryFormat();
   }
 
-  writeValue(value: ReleaseNoteContent | null): void {
-    this.value = value ?? EMPTY_CONTENT;
+  writeValue(value: string | null): void {
+    this.value = value ?? '';
     if (this.quill) {
       this.load(this.quill);
     }
   }
 
-  registerOnChange(fn: (value: ReleaseNoteContent) => void): void {
+  registerOnChange(fn: (value: string) => void): void {
     this.onChange = fn;
   }
 
@@ -81,7 +78,7 @@ export class RichTextEditor implements ControlValueAccessor {
 
     const textChanged = (_delta: unknown, _old: unknown, source: string) => {
       if (source !== 'silent') {
-        this.value = readNoteContent(quill);
+        this.value = readNoteHtml(quill);
         this.onChange(this.value);
       }
     };

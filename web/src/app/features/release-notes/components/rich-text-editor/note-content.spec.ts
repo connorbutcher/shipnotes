@@ -1,67 +1,61 @@
 import Quill from 'quill';
-import { ReleaseNoteContent } from '../../../../core/models/release-note.model';
 import { registerCategoryFormat } from './category-format';
-import { readNoteContent, toNoteDelta } from './note-content';
+import { readNoteHtml, toNoteDelta } from './note-content';
 
-describe('note content in the editor', () => {
-  function setup(content?: ReleaseNoteContent) {
+describe('note HTML in the editor', () => {
+  function setup(html?: string) {
     registerCategoryFormat();
     const host = document.createElement('div');
     document.body.appendChild(host);
     const quill = new Quill(host);
-    if (content) {
-      quill.setContents(toNoteDelta(quill, content), 'silent');
+    if (html !== undefined) {
+      quill.setContents(toNoteDelta(quill, html), 'silent');
     }
     return quill;
   }
 
-  const note: ReleaseNoteContent = {
-    summaryHtml: '<p>Big release</p>',
-    sections: [
-      { category: 'fixed', contentHtml: '<p>Crash on start</p>' },
-      {
-        category: 'added',
-        contentHtml: '<h2>Calendar</h2><ul><li>Week view</li><li>Month view</li></ul>',
-      },
-    ],
-  };
+  const section = (category: string, label: string, html: string) =>
+    `<section class="note-section note-section--${category}">` +
+    `<h2 class="note-section__title">${label}</h2>${html}</section>`;
 
-  it('loads the summary, then each section in display order, marked with its category', () => {
-    const quill = setup(note);
+  it('loads each section as lines in its category, without its heading', () => {
+    const quill = setup(
+      '<p>Intro</p>' +
+        section('fixed', 'Fixed', '<p>Crash on start</p>') +
+        '<p>Outro</p>' +
+        section('added', 'Added', '<ul><li>Week view</li></ul>'),
+    );
 
     const lines = [...quill.root.children].map((el) => `${el.tagName} ${el.className}`.trim());
-    expect(lines).toEqual(['P', 'H2 note-section--added', 'OL', 'P note-section--fixed']);
-    expect([...quill.root.querySelectorAll('li')].map((li) => li.className)).toEqual([
-      'note-section--added',
-      'note-section--added',
-    ]);
+    expect(lines).toEqual(['P', 'P note-section--fixed', 'P', 'OL']);
+    expect(quill.root.querySelector('li')?.className).toBe('note-section--added');
+    expect(quill.root.textContent).not.toContain('Fixed');
   });
 
-  it('reads back the same summary and sections, without the editor classes', () => {
-    const quill = setup(note);
+  it('writes the document back as one HTML document, in the order it was written', () => {
+    const quill = setup(
+      '<p>Intro</p>' +
+        section('fixed', 'Fixed', '<p>Crash on start</p>') +
+        '<p>Outro</p>' +
+        section('fixed', 'Fixed', '<p>Second fix</p>'),
+    );
 
-    expect(readNoteContent(quill)).toEqual({
-      summaryHtml: '<p>Big&nbsp;release</p>',
-      sections: [
-        {
-          category: 'added',
-          contentHtml: '<h2>Calendar</h2><ul><li>Week&nbsp;view</li><li>Month&nbsp;view</li></ul>',
-        },
-        { category: 'fixed', contentHtml: '<p>Crash&nbsp;on&nbsp;start</p>' },
-      ],
-    });
+    expect(readNoteHtml(quill)).toBe(
+      '<p>Intro</p>' +
+        section('fixed', 'Fixed', '<p>Crash on start</p>') +
+        '<p>Outro</p>' +
+        section('fixed', 'Fixed', '<p>Second fix</p>'),
+    );
   });
 
-  it('puts lines in a section with the category format, and joins repeated categories', () => {
+  it('wraps lines put in a section from the toolbar', () => {
     const quill = setup();
-    quill.setText('Intro\nOne\nMiddle\nTwo\n');
-    quill.formatLine(6, 1, 'category', 'fixed');
-    quill.formatLine(17, 1, 'category', 'fixed');
+    quill.setText('Intro\nOne\nTwo\n');
+    quill.formatLine(6, 8, 'category', 'breaking');
 
-    expect(readNoteContent(quill)).toEqual({
-      summaryHtml: '<p>Intro</p><p>Middle</p>',
-      sections: [{ category: 'fixed', contentHtml: '<p>One</p><p>Two</p>' }],
-    });
+    expect(readNoteHtml(quill)).toBe(
+      '<p>Intro</p>' + section('breaking', 'Breaking changes', '<p>One</p><p>Two</p>'),
+    );
   });
 
   it('ignores categories it does not know', () => {
@@ -69,15 +63,12 @@ describe('note content in the editor', () => {
     quill.setText('Text\n');
     quill.formatLine(0, 1, 'category', 'nonsense');
 
-    expect(readNoteContent(quill).sections).toEqual([]);
+    expect(readNoteHtml(quill)).toBe('<p>Text</p>');
   });
 
-  it('keeps a pasted section class, so copying between notes keeps the section', () => {
-    const quill = setup();
-    quill.clipboard.dangerouslyPasteHTML('<p class="note-section--security">Patched</p>');
+  it('treats sections it does not recognise as ordinary content', () => {
+    const quill = setup('<section class="other"><p>Hi</p></section>');
 
-    expect(readNoteContent(quill).sections).toEqual([
-      { category: 'security', contentHtml: '<p>Patched</p>' },
-    ]);
+    expect(readNoteHtml(quill)).toBe('<p>Hi</p>');
   });
 });

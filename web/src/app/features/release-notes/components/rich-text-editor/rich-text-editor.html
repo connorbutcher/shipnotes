@@ -7,7 +7,7 @@
   <div quill-editor-toolbar>
     <span class="ql-formats">
       <select class="ql-category" aria-label="Section">
-        <option selected>Summary</option>
+        <option selected>No section</option>
         @for (category of categories; track category.value) {
           <option [attr.value]="category.value">{{ category.label }}</option>
         }

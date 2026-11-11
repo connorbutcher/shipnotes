@@ -1,80 +1,31 @@
-import type { TagSeverity } from 'primeng/types/tag';
-
-/** The kind of change a release note section describes. */
+/**
+ * The kinds of change the editor can mark a block of a note as. These only drive the editor's
+ * section picker and the classes it writes into the note's HTML; the API stores that HTML as is.
+ */
 export type ReleaseNoteCategory =
   'breaking' | 'added' | 'changed' | 'deprecated' | 'removed' | 'fixed' | 'security';
 
 export interface ReleaseNoteCategoryOption {
   value: ReleaseNoteCategory;
   label: string;
-  /** A PrimeIcons class, e.g. `pi pi-plus`. */
-  icon: string;
-  severity: TagSeverity;
-  description: string;
 }
 
-/** Every category in display order, matching the API (breaking changes first). */
+/** Every category, in the order the section picker lists them. */
 export const RELEASE_NOTE_CATEGORIES: readonly ReleaseNoteCategoryOption[] = [
-  {
-    value: 'breaking',
-    label: 'Breaking changes',
-    icon: 'pi pi-exclamation-triangle',
-    severity: 'danger',
-    description: 'Changes that need users or integrators to act',
-  },
-  {
-    value: 'added',
-    label: 'Added',
-    icon: 'pi pi-plus',
-    severity: 'success',
-    description: 'New features',
-  },
-  {
-    value: 'changed',
-    label: 'Changed',
-    icon: 'pi pi-sync',
-    severity: 'info',
-    description: 'Changes to existing behaviour',
-  },
-  {
-    value: 'deprecated',
-    label: 'Deprecated',
-    icon: 'pi pi-clock',
-    severity: 'warn',
-    description: 'Features that will be removed later',
-  },
-  {
-    value: 'removed',
-    label: 'Removed',
-    icon: 'pi pi-minus-circle',
-    severity: 'contrast',
-    description: 'Features that are gone',
-  },
-  {
-    value: 'fixed',
-    label: 'Fixed',
-    icon: 'pi pi-wrench',
-    severity: 'secondary',
-    description: 'Bug fixes',
-  },
-  {
-    value: 'security',
-    label: 'Security',
-    icon: 'pi pi-shield',
-    severity: 'danger',
-    description: 'Vulnerability fixes and hardening',
-  },
+  { value: 'breaking', label: 'Breaking changes' },
+  { value: 'added', label: 'Added' },
+  { value: 'changed', label: 'Changed' },
+  { value: 'deprecated', label: 'Deprecated' },
+  { value: 'removed', label: 'Removed' },
+  { value: 'fixed', label: 'Fixed' },
+  { value: 'security', label: 'Security' },
 ];
 
 export function categoryOption(category: ReleaseNoteCategory): ReleaseNoteCategoryOption {
   return RELEASE_NOTE_CATEGORIES.find((c) => c.value === category) ?? RELEASE_NOTE_CATEGORIES[0];
 }
 
-/** Sorts categories (or anything with a category) into display order. */
-export function byCategoryOrder<T>(
-  items: readonly T[],
-  category: (item: T) => ReleaseNoteCategory,
-): T[] {
-  const order = (item: T) => RELEASE_NOTE_CATEGORIES.findIndex((c) => c.value === category(item));
-  return [...items].sort((a, b) => order(a) - order(b));
+/** The category with this value, or null when it isn't one. */
+export function parseCategory(value: string | null | undefined): ReleaseNoteCategory | null {
+  return RELEASE_NOTE_CATEGORIES.find((c) => c.value === value)?.value ?? null;
 }

@@ -36,11 +36,4 @@ describe('buildQueryPath', () => {
   it('uses the base path itself for application details', () => {
     expect(buildQueryPath(query({ endpoint: 'application' }))).toBe('');
   });
-
-  it('sends categories comma-separated, only where supported', () => {
-    expect(
-      buildQueryPath(query({ endpoint: 'latest', categories: ['breaking', 'security'] })),
-    ).toBe('/release-notes/latest?category=breaking,security');
-    expect(buildQueryPath(query({ endpoint: 'application', categories: ['fixed'] }))).toBe('');
-  });
 });

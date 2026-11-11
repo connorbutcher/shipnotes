@@ -1,5 +1,4 @@
 using ShipNotes.Application.Abstractions;
-using ShipNotes.Application.Common;
 using ShipNotes.Domain.Media;
 using ShipNotes.Domain.ReleaseNotes;
 
@@ -15,10 +14,10 @@ internal sealed class ReleaseNoteMediaService(
     public async Task<NoteContent> PrepareContentAsync(
         Guid applicationId,
         Guid? releaseNoteId,
-        ReleaseNoteContent content,
+        string html,
         CancellationToken cancellationToken)
     {
-        var candidateIds = AllHtml(content).SelectMany(MediaRoutes.FindMediaIds).ToHashSet();
+        var candidateIds = MediaRoutes.FindMediaIds(html);
         var available = candidateIds.Count == 0
             ? []
             : (await mediaRepository.ListAsync(applicationId, [.. candidateIds], cancellationToken))
@@ -26,7 +25,7 @@ internal sealed class ReleaseNoteMediaService(
                 .ToDictionary(m => m.Id);
 
         var used = new Dictionary<Guid, MediaData>();
-        string Sanitize(string html) => sanitizer.Sanitize(html, src =>
+        var sanitized = sanitizer.Sanitize(html, src =>
         {
             if (MediaRoutes.TryGetMediaId(src, out var id) && available.TryGetValue(id.Value, out var media))
             {
@@ -37,17 +36,8 @@ internal sealed class ReleaseNoteMediaService(
             return null;
         });
 
-        var summary = Sanitize(content.SummaryHtml);
-        var sections = content.Sections
-            .Select(s => s with { ContentHtml = Sanitize(s.ContentHtml) })
-            .Where(s => !HtmlText.IsBlank(s.ContentHtml))
-            .ToList();
-
-        return new NoteContent(new ReleaseNoteContent(HtmlText.IsBlank(summary) ? string.Empty : summary, sections), [.. used.Values]);
+        return new NoteContent(sanitized, [.. used.Values]);
     }
-
-    private static IEnumerable<string> AllHtml(ReleaseNoteContent content) =>
-        [content.SummaryHtml, .. content.Sections.Select(s => s.ContentHtml)];
 
     public async Task<IReadOnlyList<MediaData>> SyncAsync(ReleaseNote note, NoteContent content, CancellationToken cancellationToken)
     {

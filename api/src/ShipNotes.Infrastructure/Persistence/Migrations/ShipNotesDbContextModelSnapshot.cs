@@ -119,6 +119,10 @@ namespace ShipNotes.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ApplicationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ContentHtml")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -127,10 +131,6 @@ namespace ShipNotes.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTimeOffset?>("PublishedAt")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("SummaryHtml")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -184,30 +184,6 @@ namespace ShipNotes.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.OwnsMany("ShipNotes.Domain.ReleaseNotes.ReleaseNoteSection", "Sections", b1 =>
-                        {
-                            b1.Property<Guid>("ReleaseNoteId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Category")
-                                .HasMaxLength(20)
-                                .IsUnicode(false)
-                                .HasColumnType("varchar(20)");
-
-                            b1.Property<string>("ContentHtml")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("ReleaseNoteId", "Category");
-
-                            b1.ToTable("ReleaseNoteSections", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ReleaseNoteId");
-                        });
-
-                    b.Navigation("Sections");
                 });
 #pragma warning restore 612, 618
         }
