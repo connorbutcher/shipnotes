@@ -17,10 +17,11 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
   text-decoration: none;
+}
 
-  .pi {
-    color: var(--color-accent);
-  }
+.brand-logo {
+  width: var(--space-8);
+  height: var(--space-8);
 }
 
 .nav-link {
