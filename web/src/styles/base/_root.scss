@@ -11,6 +11,7 @@
   @include custom-properties('border-width', $border-widths);
   @include custom-properties('shadow', $shadows);
   @include custom-properties('color', $colors);
+  @include custom-properties('category', $category-colors);
 
   @each $key, $value in $layout {
     --#{$key}: #{$value};

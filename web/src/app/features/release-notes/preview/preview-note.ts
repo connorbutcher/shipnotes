@@ -55,7 +55,8 @@ function composeHtml(summaryHtml: string, sections: readonly PublicReleaseNoteSe
     sections
       .map(
         (s) =>
-          `<section data-category="${s.category}"><h2>${s.label}</h2>${s.contentHtml}</section>`,
+          `<section class="note-section note-section--${s.category}" data-category="${s.category}">` +
+          `<h2 class="note-section__title">${s.label}</h2>${s.contentHtml}</section>`,
       )
       .join('')
   );

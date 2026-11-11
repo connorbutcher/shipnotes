@@ -9,7 +9,8 @@ public sealed record PublicApplicationDto(string Name, string? IconUrl);
 /// <param name="Sections">One section per category of change, in display order (breaking changes first).</param>
 /// <param name="ContentHtml">
 /// The summary and every section as one ready-to-render HTML fragment, each section wrapped in
-/// <c>&lt;section data-category="..."&gt;</c> with an <c>&lt;h2&gt;</c> heading, for apps that don't need the structure.
+/// <c>&lt;section class="note-section note-section--{category}" data-category="{category}"&gt;</c> with an
+/// <c>&lt;h2 class="note-section__title"&gt;</c> heading, so apps that don't need the structure can still style each section.
 /// </param>
 public sealed record PublicReleaseNoteDto(
     string Version,

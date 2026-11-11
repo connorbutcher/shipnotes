@@ -49,8 +49,10 @@ describe('ReleaseNoteForm', () => {
     ]);
   });
 
-  it('loads the sections of an existing note', () => {
+  it('loads an existing note into one editor, with a block per section', async () => {
     const fixture = TestBed.createComponent(ReleaseNoteForm);
+    const saved: SaveReleaseNoteRequest[] = [];
+    fixture.componentInstance.saved.subscribe((value) => saved.push(value));
     fixture.componentRef.setInput('releaseNote', {
       id: 'n1',
       applicationId: 'a1',
@@ -69,22 +71,41 @@ describe('ReleaseNoteForm', () => {
     });
     fixture.detectChanges();
     const element = fixture.nativeElement as HTMLElement;
+    await vi.waitFor(() => expect(element.querySelector('.ql-editor > p')).not.toBeNull());
 
-    const tags = [...element.querySelectorAll('app-release-note-section app-category-tag')];
-    expect(tags.map((t) => t.textContent?.trim())).toEqual(['Breaking changes', 'Fixed']);
-    expect(element.querySelector('app-category-picker')?.textContent).not.toContain('Fixed');
+    expect(element.querySelectorAll('quill-editor').length).toBe(1);
+    const lines = [...element.querySelectorAll('.ql-editor > p')];
+    expect(lines.map((p) => [p.className, p.textContent])).toEqual([
+      ['', 'Intro'],
+      ['note-section--breaking', 'B'],
+      ['note-section--fixed', 'F'],
+    ]);
+
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+    expect(saved[0]).toMatchObject({
+      summaryHtml: '<p>Intro</p>',
+      sections: [
+        { category: 'breaking', contentHtml: '<p>B</p>' },
+        { category: 'fixed', contentHtml: '<p>F</p>' },
+      ],
+    });
   });
 
-  it('adds a section from the category picker', () => {
+  it('offers every category in the toolbar section picker', async () => {
     const { fixture, element } = setup();
-    const addSecurity = [
-      ...element.querySelectorAll<HTMLButtonElement>('app-category-picker button'),
-    ].find((b) => b.textContent?.includes('Security'))!;
+    await fixture.whenStable();
 
-    addSecurity.click();
-    fixture.detectChanges();
-
-    expect(element.querySelectorAll('app-release-note-section').length).toBe(1);
+    const options = [...element.querySelectorAll('select.ql-category option')];
+    expect(options.map((o) => o.textContent?.trim())).toEqual([
+      'Summary',
+      'Breaking changes',
+      'Added',
+      'Changed',
+      'Deprecated',
+      'Removed',
+      'Fixed',
+      'Security',
+    ]);
   });
 
   it('emits the draft as the user types, for the live preview', () => {
