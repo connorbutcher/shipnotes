@@ -1,0 +1,51 @@
+@use '../abstracts' as *;
+
+// Category sections in the release note editor (see the rich text editor component). Quill
+// marks each line in a section with a `note-section--{category}` class; these rules draw the
+// section's coloured bar and put its label above the first line of each run. Global because
+// the lines are Quill's DOM, not the component's template.
+
+.ql-editor [class*='note-section--'] {
+  padding-left: var(--space-3);
+  border-left: var(--border-width-thick) solid var(--section-color);
+  background: color-mix(in srgb, var(--section-color) 6%, transparent);
+}
+
+// Lists in a section keep their bar in line with the section's other lines.
+.ql-editor ol:has(> li[class*='note-section--']) {
+  padding-left: 0;
+}
+
+.ql-editor li[class*='note-section--'] {
+  padding-left: calc(var(--space-3) + var(--space-6));
+}
+
+@mixin section-label {
+  content: var(--section-label);
+  display: block;
+  padding-top: var(--space-2);
+  color: var(--section-color);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+@each $category, $label in $category-labels {
+  $line: '.note-section--#{$category}';
+  // A sibling that continues the same section: a line in it, or a list ending in it.
+  $same: '#{$line}, ol:has(> li#{$line}:last-child)';
+
+  .ql-editor #{$line} {
+    --section-color: var(--category-#{$category});
+    --section-label: '#{$label}';
+  }
+
+  .ql-editor > #{$line}:first-child::before,
+  .ql-editor > :not(#{$same}) + #{$line}::before,
+  .ql-editor > ol:first-child > li#{$line}:first-child::before,
+  .ql-editor > :not(#{$same}) + ol > li#{$line}:first-child::before,
+  .ql-editor li:not(#{$line}) + li#{$line}::before {
+    @include section-label;
+  }
+}

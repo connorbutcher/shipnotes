@@ -170,9 +170,9 @@ public sealed class PublicApiTests : IDisposable
             (ReleaseNoteCategory.Security, "Security"));
         note.ContentHtml.Should().Be(
             "<p>Big release</p>" +
-            "<section data-category=\"breaking\"><h2>Breaking changes</h2><p>v1 API removed</p></section>" +
-            "<section data-category=\"added\"><h2>Added</h2><p>Calendar</p></section>" +
-            "<section data-category=\"security\"><h2>Security</h2><p>Shorter sessions</p></section>");
+            "<section class=\"note-section note-section--breaking\" data-category=\"breaking\"><h2 class=\"note-section__title\">Breaking changes</h2><p>v1 API removed</p></section>" +
+            "<section class=\"note-section note-section--added\" data-category=\"added\"><h2 class=\"note-section__title\">Added</h2><p>Calendar</p></section>" +
+            "<section class=\"note-section note-section--security\" data-category=\"security\"><h2 class=\"note-section__title\">Security</h2><p>Shorter sessions</p></section>");
     }
 
     [Fact]

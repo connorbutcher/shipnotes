@@ -41,7 +41,9 @@
       <code>sections</code> in this order. Pass <code>category</code> (repeated, or comma-separated
       like <code>?category=breaking,security</code>) to get only notes with those categories, and
       only those sections of them. <code>contentHtml</code> still holds the whole note as one
-      fragment, each section in <code>&lt;section data-category="…"&gt;</code>.
+      fragment, each section in
+      <code>&lt;section class="note-section note-section--fixed" data-category="fixed"&gt;</code>
+      (with the category's value), so you can style each kind of change with CSS.
     </p>
     <p-table [value]="categories" size="small">
       <ng-template #header>

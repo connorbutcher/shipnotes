@@ -27,8 +27,10 @@ describe('toPreviewNote', () => {
       ],
       contentHtml:
         '<p>Hello world</p>' +
-        '<section data-category="added"><h2>Added</h2><p>Dark mode</p></section>' +
-        '<section data-category="fixed"><h2>Fixed</h2><p>Crash on start</p></section>',
+        '<section class="note-section note-section--added" data-category="added">' +
+        '<h2 class="note-section__title">Added</h2><p>Dark mode</p></section>' +
+        '<section class="note-section note-section--fixed" data-category="fixed">' +
+        '<h2 class="note-section__title">Fixed</h2><p>Crash on start</p></section>',
       publishedAt: now.toISOString(),
     });
   });

@@ -47,7 +47,9 @@ Images are never stored inline in a note. The editor's image button (and pasting
 
 ## Categories
 
-A release note is an optional summary (intro text, highlights, screenshots) followed by at most one section per category, each written in its own editor. In the editor, add a section with the category buttons under **Changes by category**; sections left empty are dropped when you save.
+A release note is an optional summary (intro text, highlights, screenshots) followed by at most one section per category. The whole note is written in one editor: put the cursor on a line (or select several) and pick a category from the **Section** picker at the start of the toolbar. Lines in a section get a coloured bar and the category's label; pick **Summary** to take them out again, or press Enter on an empty line to end a section. Lines outside any section are the summary.
+
+When you save, the editor splits the note into the summary and its sections. A category used in more than one place is joined into one section, sections come back in the order below, and sections left empty are dropped. Notes saved before the single editor load into it unchanged, with each old section shown as a block of its category.
 
 | Category | Value | Use for |
 | --- | --- | --- |
@@ -105,13 +107,23 @@ curl -H "X-Api-Key: $SHIPNOTES_API_KEY" \
       { "category": "added", "label": "Added", "contentHtml": "<ul><li>Dark mode</li></ul>" },
       { "category": "fixed", "label": "Fixed", "contentHtml": "<ul><li>Faster start-up</li></ul>" }
     ],
-    "contentHtml": "<p>Dark mode is here.</p><section data-category=\"added\"><h2>Added</h2><ul><li>Dark mode</li></ul></section><section data-category=\"fixed\"><h2>Fixed</h2><ul><li>Faster start-up</li></ul></section>",
+    "contentHtml": "<p>Dark mode is here.</p><section class=\"note-section note-section--added\" data-category=\"added\"><h2 class=\"note-section__title\">Added</h2><ul><li>Dark mode</li></ul></section><section class=\"note-section note-section--fixed\" data-category=\"fixed\"><h2 class=\"note-section__title\">Fixed</h2><ul><li>Faster start-up</li></ul></section>",
     "publishedAt": "2026-11-10T20:00:45+00:00"
   }
 ]
 ```
 
-Use `summaryHtml` and `sections` to lay notes out yourself (for example, a coloured badge per category). `contentHtml` is the same note as one ready-to-render fragment, with each section wrapped in `<section data-category="…">` and an `<h2>` heading, so existing integrations keep working and can style sections with CSS. All HTML is sanitised on the server with an allow-list, so it can be rendered directly. The public endpoints allow any origin (CORS) and are rate limited to 120 requests per minute per key.
+Use `summaryHtml` and `sections` to lay notes out yourself (for example, a coloured badge per category). `contentHtml` is the same note as one ready-to-render fragment, with each section wrapped in `<section class="note-section note-section--{category}" data-category="{category}">` and an `<h2 class="note-section__title">` heading, so you can style each kind of change with plain CSS:
+
+```css
+.note-section { border-left: 3px solid #94a3b8; padding-left: 1rem; }
+.note-section--breaking { border-color: #dc2626; }
+.note-section--added { border-color: #16a34a; }
+.note-section--fixed { border-color: #0d9488; }
+.note-section__title { font-size: 0.75rem; text-transform: uppercase; }
+```
+
+ All HTML is sanitised on the server with an allow-list, so it can be rendered directly. The public endpoints allow any origin (CORS) and are rate limited to 120 requests per minute per key.
 
 ## Showcase
 

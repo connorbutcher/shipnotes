@@ -40,18 +40,17 @@
     </div>
   </div>
 
-  <div class="field" role="group" aria-labelledby="note-summary-label">
-    <span id="note-summary-label" class="label">Summary <em>(optional)</em></span>
+  <div class="field" role="group" aria-labelledby="note-content-label">
+    <span id="note-content-label" class="label">Release notes</span>
+    <p class="hint text-muted text-sm">
+      Start with a summary, then pick a section such as Added or Fixed from the toolbar to group
+      changes by kind. Apps can filter by section and style each one by its class.
+    </p>
     <app-rich-text-editor
-      [control]="form.controls.summaryHtml"
+      formControlName="content"
       [uploadImage]="uploadImage()"
-      placeholder="Introduce the release: highlights, screenshots…"
+      placeholder="Introduce the release, then add sections for what was added, changed or fixed…"
     />
-  </div>
-
-  <div class="field" role="group" aria-labelledby="note-sections-label">
-    <span id="note-sections-label" class="label">Changes by category</span>
-    <app-release-note-sections [sections]="form.controls.sections" [uploadImage]="uploadImage()" />
   </div>
 
   <div class="footer">

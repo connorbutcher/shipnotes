@@ -30,8 +30,9 @@ internal static class PublicReleaseNoteMappings
         foreach (var section in sections)
         {
             var category = section.Category.ToString().ToLowerInvariant();
-            html.Append("<section data-category=\"").Append(category).Append("\">")
-                .Append("<h2>").Append(WebUtility.HtmlEncode(section.Label)).Append("</h2>")
+            html.Append("<section class=\"note-section note-section--").Append(category)
+                .Append("\" data-category=\"").Append(category).Append("\">")
+                .Append("<h2 class=\"note-section__title\">").Append(WebUtility.HtmlEncode(section.Label)).Append("</h2>")
                 .Append(section.ContentHtml)
                 .Append("</section>");
         }

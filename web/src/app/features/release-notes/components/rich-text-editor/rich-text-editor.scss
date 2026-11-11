@@ -2,24 +2,32 @@
   display: block;
 }
 
-:host ::ng-deep .ql-toolbar {
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  border-color: var(--color-border);
-}
-
-:host ::ng-deep .ql-container {
-  min-height: var(--editor-min-height);
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-  border-color: var(--color-border);
-  font-family: inherit;
-  font-size: var(--font-size-base);
-}
-
-:host(.compact) ::ng-deep .ql-container {
-  min-height: var(--editor-compact-min-height);
-}
-
 quill-editor {
   display: block;
   width: 100%;
+}
+
+:host ::ng-deep {
+  .ql-toolbar {
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    border-color: var(--color-border);
+  }
+
+  .ql-container {
+    min-height: var(--editor-min-height);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    border-color: var(--color-border);
+    font-family: inherit;
+    font-size: var(--font-size-base);
+  }
+
+  // The section picker shows each option's label (Quill copies it to data-label).
+  .ql-snow .ql-picker.ql-category {
+    width: var(--editor-picker-width);
+
+    .ql-picker-label::before,
+    .ql-picker-item::before {
+      content: attr(data-label);
+    }
+  }
 }

@@ -26,6 +26,9 @@ export interface ReleaseNote extends Omit<ReleaseNoteSummary, 'categories'> {
   createdAt: string;
 }
 
+/** What a note says: optional summary text, then at most one section per category. */
+export type ReleaseNoteContent = Pick<ReleaseNote, 'summaryHtml' | 'sections'>;
+
 export interface SaveReleaseNoteRequest {
   version: string;
   title: string;

@@ -78,7 +78,7 @@ $layout: (
   'prose-max-width': 28rem,
   'narrow-max-width': 40rem,
   'editor-min-height': 18rem,
-  'editor-compact-min-height': 8rem,
+  'editor-picker-width': 9rem,
   'field-min-width': 12rem,
   'response-max-height': 32rem,
 );
@@ -113,4 +113,28 @@ $colors: (
   'code-keyword': var(--p-green-300),
   'code-attribute': var(--p-sky-300),
   'code-comment': var(--p-surface-400),
+);
+
+// Release note categories (keys match the API's category names). The colours mark each
+// category section in the editor and are emitted as --category-{name}; the labels are
+// shown on the first line of each section. Keep the labels in step with
+// core/models/release-note-category.ts.
+$category-colors: (
+  'breaking': var(--p-red-600),
+  'added': var(--p-green-600),
+  'changed': var(--p-sky-600),
+  'deprecated': var(--p-amber-600),
+  'removed': var(--p-surface-600),
+  'fixed': var(--p-teal-600),
+  'security': var(--p-purple-600),
+);
+
+$category-labels: (
+  'breaking': 'Breaking changes',
+  'added': 'Added',
+  'changed': 'Changed',
+  'deprecated': 'Deprecated',
+  'removed': 'Removed',
+  'fixed': 'Fixed',
+  'security': 'Security',
 );
